@@ -1,5 +1,5 @@
 /***************************************************************************
-# Copyright (c) 2015, NVIDIA CORPORATION. All rights reserved.
+# Copyright (c) 2017, NVIDIA CORPORATION. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -25,48 +25,49 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************************/
+__import DefaultVS;
+__import Shading;
+__import ShaderCommon;
+__import Effects.CascadedShadowMap;
 
-#pragma once
-#include <memory>
-#include "API/FBO.h"
-#include "API/Texture.h"
-#include "glm/vec2.hpp"
-#include <vector>
-
-#ifndef NO_FOVE
-#include "OpenVR/VRDisplay.h"
-#else
-#include "FoveVR/VRDisplay.h"
-#endif
-
-namespace Falcor
+cbuffer PerFrameCB : register(b0)
 {
-    class VrFbo
+	float3 gAmbient;
+    CsmData gCsmData[_LIGHT_COUNT];
+    bool visualizeCascades;
+    float4x4 camVpAtLastCsmUpdate;
+};
+
+struct ShadowsVSOut
+{
+    VS_OUT vsData;
+    float shadowsDepthC : DEPTH;
+};
+
+float4 main(ShadowsVSOut pIn) : SV_TARGET0
+{
+    ShadingAttribs shAttr;
+    prepareShadingAttribs(gMaterial, pIn.vsData.posW, gCam.position, pIn.vsData.normalW, pIn.vsData.bitangentW, pIn.vsData.texC, 0, shAttr);
+    ShadingOutput result;
+    float4 fragColor = float4(0,0,0,1);
+    
+    [unroll]
+    for(uint l = 0 ; l < _LIGHT_COUNT ; l++)
     {
-    public:
-        using UniquePtr = std::unique_ptr<VrFbo>;
-        /** Create a new VrFbo. It will create array resources for color and depth. It will also create views into each array-slice
-            \param[in] desc FBO description
-            \param[in] width The width of the FBO. Optional, by default will use the HMD render-target size
-            \param[in] height The height of the FBO. Optional, by default will use the HMD render-target size
-        */
-        static UniquePtr create(const Fbo::Desc& desc, uint32_t width = 0, uint32_t height = 0);
+        float shadowFactor = calcShadowFactor(gCsmData[l], pIn.shadowsDepthC, shAttr.P, pIn.vsData.posH.xy/pIn.vsData.posH.w);
+        evalMaterial(shAttr, gLights[l], result, l == 0);
+        fragColor.rgb += result.diffuseAlbedo * result.diffuseIllumination * shadowFactor;
+        fragColor.rgb += result.specularAlbedo * result.specularIllumination * (0.01f + shadowFactor * 0.99f);
+    }
 
-        /** Submit the color target into the HMD
-        */
-        void submitToHmd(RenderContext* pRenderCtx) const;
+    fragColor.rgb += gAmbient * result.diffuseAlbedo * 0.1;
+    if(visualizeCascades)
+    {
+        //Ideally this would be light index so you can visualize the cascades of the 
+        //currently selected light. However, because csmData contains Textures, it doesn't
+        //like getting them with a non literal index.
+        fragColor.rgb *= getBlendedCascadeColor(gCsmData[_LIGHT_INDEX], pIn.shadowsDepthC);
+    }
 
-        /** Get the FBO
-        */
-        Fbo::SharedPtr getFbo() const { return mpFbo; }
-
-        /** Get the resource view to an eye's resource view
-        */
-        Texture::SharedPtr getEyeResourceView(VRDisplay::Eye eye) const { return (eye == VRDisplay::Eye::Left) ? mpLeftView : mpRightView; }
-
-    private:
-        Fbo::SharedPtr mpFbo;
-        Texture::SharedPtr mpLeftView;
-        Texture::SharedPtr mpRightView;
-    };
+    return fragColor;
 }

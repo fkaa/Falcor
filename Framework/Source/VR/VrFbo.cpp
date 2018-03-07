@@ -27,10 +27,17 @@
 ***************************************************************************/
 #include "Framework.h"
 #include "VrFbo.h"
-#include "OpenVR/VRSystem.h"
-#include "OpenVR/VRDisplay.h"
+
 #include "Graphics/FboHelper.h"
 #include "API/Texture.h"
+
+#ifndef NO_FOVE
+#include "OpenVR/VRSystem.h"
+#include "OpenVR/VRDisplay.h"
+#else
+#include "FoveVR/VRSystem.h"
+#include "FoveVR/VRDisplay.h"
+#endif
 
 namespace Falcor
 {
@@ -39,6 +46,9 @@ namespace Falcor
         VRSystem* pVrSystem = VRSystem::instance();
         VRDisplay* pDisplay = pVrSystem->getHMD().get();
         glm::ivec2 renderSize = pDisplay->getRecommendedRenderSize();
+
+        // HACK: FOVE returns full display, not eye
+        renderSize.x /= 2;
         return renderSize;
     }
 

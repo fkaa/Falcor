@@ -1,5 +1,5 @@
 /***************************************************************************
-# Copyright (c) 2015, NVIDIA CORPORATION. All rights reserved.
+# Copyright (c) 2017, NVIDIA CORPORATION. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -25,48 +25,26 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************************/
+__import ShaderCommon;
+__import Shading;
+__import DefaultVS;
 
-#pragma once
-#include <memory>
-#include "API/FBO.h"
-#include "API/Texture.h"
-#include "glm/vec2.hpp"
-#include <vector>
-
-#ifndef NO_FOVE
-#include "OpenVR/VRDisplay.h"
-#else
-#include "FoveVR/VRDisplay.h"
-#endif
-
-namespace Falcor
+float4 main(VS_OUT vOut) : SV_TARGET
 {
-    class VrFbo
+    ShadingAttribs shAttr;
+    prepareShadingAttribs(gMaterial, vOut.posW, gCam.position, vOut.normalW, vOut.bitangentW, vOut.texC, 0, shAttr);
+
+    ShadingOutput result;
+    float4 fragColor = float4(0, 0, 0, 1);
+
+    for (uint l = 0; l < gLightsCount; l++)
     {
-    public:
-        using UniquePtr = std::unique_ptr<VrFbo>;
-        /** Create a new VrFbo. It will create array resources for color and depth. It will also create views into each array-slice
-            \param[in] desc FBO description
-            \param[in] width The width of the FBO. Optional, by default will use the HMD render-target size
-            \param[in] height The height of the FBO. Optional, by default will use the HMD render-target size
-        */
-        static UniquePtr create(const Fbo::Desc& desc, uint32_t width = 0, uint32_t height = 0);
+        evalMaterial(shAttr, gLights[l], result, l == 0);
+        fragColor.rgb += result.diffuseAlbedo * result.diffuseIllumination;
+        fragColor.rgb += result.specularAlbedo * result.specularIllumination;
+    }
 
-        /** Submit the color target into the HMD
-        */
-        void submitToHmd(RenderContext* pRenderCtx) const;
+    fragColor.rgb += result.diffuseAlbedo * 0.1;
 
-        /** Get the FBO
-        */
-        Fbo::SharedPtr getFbo() const { return mpFbo; }
-
-        /** Get the resource view to an eye's resource view
-        */
-        Texture::SharedPtr getEyeResourceView(VRDisplay::Eye eye) const { return (eye == VRDisplay::Eye::Left) ? mpLeftView : mpRightView; }
-
-    private:
-        Fbo::SharedPtr mpFbo;
-        Texture::SharedPtr mpLeftView;
-        Texture::SharedPtr mpRightView;
-    };
+    return fragColor;
 }

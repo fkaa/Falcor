@@ -1,5 +1,5 @@
 /***************************************************************************
-# Copyright (c) 2015, NVIDIA CORPORATION. All rights reserved.
+# Copyright (c) 2017, NVIDIA CORPORATION. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -25,48 +25,40 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************************/
+#include "VertexAttrib.h"
+__import ShaderCommon;
+__import DefaultVS;
 
-#pragma once
-#include <memory>
-#include "API/FBO.h"
-#include "API/Texture.h"
-#include "glm/vec2.hpp"
-#include <vector>
+VS_OUT main(VS_IN vIn)
+{
+    VS_OUT vOut = defaultVS(vIn);
+/*    VS_OUT vOut;
 
-#ifndef NO_FOVE
-#include "OpenVR/VRDisplay.h"
+    // Filled out in geometry shader
+    vOut.posH = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    vOut.prevPosH = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+    float4x4 worldMat = getWorldMat(vIn);
+    float4 posW = mul(vIn.pos, worldMat);
+    vOut.posW = posW.xyz;
+
+#ifdef HAS_TEXCRD
+    vOut.texC = vIn.texC;
 #else
-#include "FoveVR/VRDisplay.h"
+    vOut.texC = 0;
 #endif
 
-namespace Falcor
-{
-    class VrFbo
-    {
-    public:
-        using UniquePtr = std::unique_ptr<VrFbo>;
-        /** Create a new VrFbo. It will create array resources for color and depth. It will also create views into each array-slice
-            \param[in] desc FBO description
-            \param[in] width The width of the FBO. Optional, by default will use the HMD render-target size
-            \param[in] height The height of the FBO. Optional, by default will use the HMD render-target size
-        */
-        static UniquePtr create(const Fbo::Desc& desc, uint32_t width = 0, uint32_t height = 0);
+#ifdef HAS_COLORS
+    vOut.colorV = vIn.color;
+#else
+    vOut.colorV = 0;
+#endif
 
-        /** Submit the color target into the HMD
-        */
-        void submitToHmd(RenderContext* pRenderCtx) const;
 
-        /** Get the FBO
-        */
-        Fbo::SharedPtr getFbo() const { return mpFbo; }
+#ifdef HAS_NORMALS
+    vOut.normalW = mul(vIn.normal, getWorldInvTransposeMat(vIn)).xyz;
+    vOut.bitangentW = mul(vIn.bitangent, (float3x3)worldMat).xyz;
+#endif*/
 
-        /** Get the resource view to an eye's resource view
-        */
-        Texture::SharedPtr getEyeResourceView(VRDisplay::Eye eye) const { return (eye == VRDisplay::Eye::Left) ? mpLeftView : mpRightView; }
-
-    private:
-        Fbo::SharedPtr mpFbo;
-        Texture::SharedPtr mpLeftView;
-        Texture::SharedPtr mpRightView;
-    };
+    return vOut;
 }

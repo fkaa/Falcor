@@ -25,48 +25,27 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************************/
+__import ShaderCommon;
+__import Shading;
+__import DefaultVS;
 
-#pragma once
-#include <memory>
-#include "API/FBO.h"
-#include "API/Texture.h"
-#include "glm/vec2.hpp"
-#include <vector>
-
-#ifndef NO_FOVE
-#include "OpenVR/VRDisplay.h"
-#else
-#include "FoveVR/VRDisplay.h"
-#endif
-
-namespace Falcor
+float4 main(VS_OUT vOut) : SV_TARGET
 {
-    class VrFbo
+    ShadingAttribs shAttr;
+    prepareShadingAttribs(gMaterial, vOut.posW, gCam.position, vOut.normalW, vOut.bitangentW, vOut.texC, shAttr);
+
+    ShadingOutput result;
+    result.finalValue = 0;
+    float4 finalColor = 0;
+
+    for (uint l = 0; l < gLightsCount; l++)
     {
-    public:
-        using UniquePtr = std::unique_ptr<VrFbo>;
-        /** Create a new VrFbo. It will create array resources for color and depth. It will also create views into each array-slice
-            \param[in] desc FBO description
-            \param[in] width The width of the FBO. Optional, by default will use the HMD render-target size
-            \param[in] height The height of the FBO. Optional, by default will use the HMD render-target size
-        */
-        static UniquePtr create(const Fbo::Desc& desc, uint32_t width = 0, uint32_t height = 0);
+        evalMaterial(shAttr, gLights[l], result, l == 0);
+    }
 
-        /** Submit the color target into the HMD
-        */
-        void submitToHmd(RenderContext* pRenderCtx) const;
+    finalColor = float4(result.finalValue, 1.f);
 
-        /** Get the FBO
-        */
-        Fbo::SharedPtr getFbo() const { return mpFbo; }
-
-        /** Get the resource view to an eye's resource view
-        */
-        Texture::SharedPtr getEyeResourceView(VRDisplay::Eye eye) const { return (eye == VRDisplay::Eye::Left) ? mpLeftView : mpRightView; }
-
-    private:
-        Fbo::SharedPtr mpFbo;
-        Texture::SharedPtr mpLeftView;
-        Texture::SharedPtr mpRightView;
-    };
+    // add ambient
+    finalColor.rgb += gAmbientLighting * getDiffuseColor(shAttr).rgb;
+    return finalColor;
 }

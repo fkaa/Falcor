@@ -1,5 +1,5 @@
 /***************************************************************************
-# Copyright (c) 2015, NVIDIA CORPORATION. All rights reserved.
+# Copyright (c) 2017, NVIDIA CORPORATION. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -25,48 +25,45 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************************/
+__import ShaderCommon;
+__import DefaultVS;
 
-#pragma once
-#include <memory>
-#include "API/FBO.h"
-#include "API/Texture.h"
-#include "glm/vec2.hpp"
-#include <vector>
-
-#ifndef NO_FOVE
-#include "OpenVR/VRDisplay.h"
-#else
-#include "FoveVR/VRDisplay.h"
-#endif
-
-namespace Falcor
+struct GS_OUT
 {
-    class VrFbo
+    VS_OUT vsOut;
+    uint rtIndex : SV_RenderTargetArrayIndex;
+};
+
+[maxvertexcount(6)]
+void main(triangle VS_OUT input[3], inout TriangleStream<GS_OUT> outStream)
+{
+    GS_OUT gsOut;
+
+    // Left Eye
+    for (int i = 0; i < 3; i++)
     {
-    public:
-        using UniquePtr = std::unique_ptr<VrFbo>;
-        /** Create a new VrFbo. It will create array resources for color and depth. It will also create views into each array-slice
-            \param[in] desc FBO description
-            \param[in] width The width of the FBO. Optional, by default will use the HMD render-target size
-            \param[in] height The height of the FBO. Optional, by default will use the HMD render-target size
-        */
-        static UniquePtr create(const Fbo::Desc& desc, uint32_t width = 0, uint32_t height = 0);
+        gsOut.rtIndex = 0;
+        gsOut.vsOut = input[i];
 
-        /** Submit the color target into the HMD
-        */
-        void submitToHmd(RenderContext* pRenderCtx) const;
+        float4 posW = float4(input[i].posW, 1.0f);
+        gsOut.vsOut.posH = mul(posW, gCam.viewProjMat);
+        gsOut.vsOut.prevPosH = mul(posW, gCam.prevViewProjMat);
 
-        /** Get the FBO
-        */
-        Fbo::SharedPtr getFbo() const { return mpFbo; }
+        outStream.Append(gsOut);
+    }
+    outStream.RestartStrip();
 
-        /** Get the resource view to an eye's resource view
-        */
-        Texture::SharedPtr getEyeResourceView(VRDisplay::Eye eye) const { return (eye == VRDisplay::Eye::Left) ? mpLeftView : mpRightView; }
+    // Right Eye
+    for (i = 0; i < 3; i++) 
+    {
+        gsOut.rtIndex = 1;
+        gsOut.vsOut = input[i];
 
-    private:
-        Fbo::SharedPtr mpFbo;
-        Texture::SharedPtr mpLeftView;
-        Texture::SharedPtr mpRightView;
-    };
+        float4 posW = float4(input[i].posW, 1.0f);
+        gsOut.vsOut.posH = mul(posW, gCam.rightEyeViewProjMat);
+        gsOut.vsOut.prevPosH = mul(posW, gCam.rightEyePrevViewProjMat);
+
+        outStream.Append(gsOut);
+    }
+    outStream.RestartStrip();
 }

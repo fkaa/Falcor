@@ -25,48 +25,30 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************************/
+__import DefaultVS;
+__import ShaderCommon;
+__import Effects.CascadedShadowMap;
 
-#pragma once
-#include <memory>
-#include "API/FBO.h"
-#include "API/Texture.h"
-#include "glm/vec2.hpp"
-#include <vector>
-
-#ifndef NO_FOVE
-#include "OpenVR/VRDisplay.h"
-#else
-#include "FoveVR/VRDisplay.h"
-#endif
-
-namespace Falcor
+cbuffer PerFrameCB : register(b0)
 {
-    class VrFbo
-    {
-    public:
-        using UniquePtr = std::unique_ptr<VrFbo>;
-        /** Create a new VrFbo. It will create array resources for color and depth. It will also create views into each array-slice
-            \param[in] desc FBO description
-            \param[in] width The width of the FBO. Optional, by default will use the HMD render-target size
-            \param[in] height The height of the FBO. Optional, by default will use the HMD render-target size
-        */
-        static UniquePtr create(const Fbo::Desc& desc, uint32_t width = 0, uint32_t height = 0);
+	float3 gAmbient;
+    CsmData gCsmData[_LIGHT_COUNT];
+    bool visualizeCascades;
+    float4x4 camVpAtLastCsmUpdate;
+};
 
-        /** Submit the color target into the HMD
-        */
-        void submitToHmd(RenderContext* pRenderCtx) const;
+struct ShadowsVSOut
+{
+    VS_OUT vsData;
+    float shadowsDepthC : DEPTH;
+};
 
-        /** Get the FBO
-        */
-        Fbo::SharedPtr getFbo() const { return mpFbo; }
+ShadowsVSOut main(VS_IN vIn)
+{
+    VS_OUT defaultOut = defaultVS(vIn);
+    ShadowsVSOut output;
+    output.vsData = defaultOut;
 
-        /** Get the resource view to an eye's resource view
-        */
-        Texture::SharedPtr getEyeResourceView(VRDisplay::Eye eye) const { return (eye == VRDisplay::Eye::Left) ? mpLeftView : mpRightView; }
-
-    private:
-        Fbo::SharedPtr mpFbo;
-        Texture::SharedPtr mpLeftView;
-        Texture::SharedPtr mpRightView;
-    };
+    output.shadowsDepthC = mul(float4(defaultOut.posW, 1), camVpAtLastCsmUpdate).z;
+    return output;
 }

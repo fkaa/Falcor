@@ -92,7 +92,7 @@ namespace Falcor
             if (j == 50 && msgList.size())
             {
                 j = 0;
-                SetWindowTextA(pData->hwnd, msgList[pData->dist(pData->rng)].c_str());
+                //SetWindowTextA(pData->hwnd, msgList[pData->dist(pData->rng)].c_str());
             }
             MSG msg;
             while (PeekMessage(&msg, pData->hwnd, 0, 0, PM_REMOVE))
