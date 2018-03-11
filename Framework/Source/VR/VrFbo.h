@@ -32,7 +32,12 @@
 #include "API/Texture.h"
 #include "glm/vec2.hpp"
 #include <vector>
+
+#ifndef NO_FOVE
 #include "OpenVR/VRDisplay.h"
+#else
+#include "FoveVR/VRDisplay.h"
+#endif
 
 namespace Falcor
 {

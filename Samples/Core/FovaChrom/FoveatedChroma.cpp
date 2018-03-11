@@ -27,7 +27,7 @@
 ***************************************************************************/
 #include "FoveatedChroma.h"
 
-static const glm::vec4 kClearColor(0.38f, 0.52f, 0.10f, 1);
+static const glm::vec4 kClearColor(0.28f, 0.52f, 0.90f, 1);
 
 
 void StereoRendering::onGuiRender()
@@ -103,6 +103,10 @@ void StereoRendering::initVR()
 
 void StereoRendering::submitStereo(bool singlePassStereo)
 {
+    // TODO: create fbo per eye for postfx:
+    //       CopySubresource into VrFbo::Left/RightView
+
+
     PROFILE(STEREO);
     VRSystem::instance()->refresh();
 
@@ -125,6 +129,30 @@ void StereoRendering::submitStereo(bool singlePassStereo)
 
     // Render
     mpSceneRenderer->renderScene(mpRenderContext.get());
+
+    mpGraphicsState->setDepthStencilState(mSkyBox.pDS);
+    //mSkyBox.pEffect->render(mpRenderContext.get(), mpSceneRenderer->getScene()->getActiveCamera().get());
+    mpGraphicsState->setDepthStencilState(nullptr);
+
+    if (mpDebugFoveation) {
+        mpColorVars->setTexture("gTexture", mpVrFbo->getFbo()->getColorTexture(0));
+        mpColorVars->setSampler("gSampler", mpTriLinearSampler);
+
+        mpGraphicsState->setFbo(mpTempFB);
+        mpRenderContext->setGraphicsState(mpGraphicsState);
+        mpRenderContext->setGraphicsVars(mpColorVars);
+        mpColorSplit->execute(mpRenderContext.get());
+
+        mpTempFB->getColorTexture(0)->generateMips();
+
+        mpBlitVars->setTexture("gTexture", mpTempFB->getColorTexture(0));
+        mpBlitVars->setSampler("gSampler", mpBilinearSampler);
+
+        mpGraphicsState->setFbo(mpVrFbo->getFbo());
+        mpRenderContext->setGraphicsState(mpGraphicsState);
+        mpRenderContext->setGraphicsVars(mpBlitVars);
+        mpBlit->execute(mpRenderContext.get());
+    }
 
     // Restore the state
     mpRenderContext->popGraphicsState();
@@ -254,15 +282,14 @@ void StereoRendering::onLoad()
     mSPSSupported = gpDevice->isExtensionSupported("VK_NVX_multiview_per_view_attributes");
 
     initVR();
-
+    
     mpGraphicsState = GraphicsState::create();
     setRenderMode();
 
     Fbo::Desc fboDesc;
     fboDesc.setColorTarget(0, Falcor::ResourceFormat::RGBA32Float);
     fboDesc.setDepthStencilTarget(ResourceFormat::D32Float);
-    mpTempFB = FboHelper::create2D(mpDefaultFBO->getWidth(), mpDefaultFBO->getHeight(), fboDesc, 1, Texture::kMaxPossible);
-    mpTempFB2 = FboHelper::create2D(mpDefaultFBO->getWidth(), mpDefaultFBO->getHeight(), fboDesc, 1, Texture::kMaxPossible);
+    mpTempFB = FboHelper::create2D(mpVrFbo->getFbo()->getWidth(), mpVrFbo->getFbo()->getHeight(), fboDesc, 1, Texture::kMaxPossible);
 
     Sampler::Desc samplerDesc;
     samplerDesc.setFilterMode(Sampler::Filter::Point, Sampler::Filter::Point, Sampler::Filter::Point);
@@ -275,7 +302,8 @@ void StereoRendering::onLoad()
     samplerDesc.setAddressingMode(Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap);
     mpBilinearSampler2 = Sampler::create(samplerDesc);;
 
-    loadScene("Bistro/Bistro_Exterior.fscene");
+    loadScene("Scenes/ogre.fscene");
+    //loadScene("Bistro/Bistro_Interior.fscene");
 }
 
 void StereoRendering::blitTexture(Texture::SharedPtr pTexture, uint32_t xStart)
@@ -341,17 +369,7 @@ bool StereoRendering::onKeyEvent(const KeyboardEvent& keyEvent)
     if (keyEvent.key == KeyboardEvent::Key::R && keyEvent.type == KeyboardEvent::Type::KeyReleased) {
         mpDebugViz = !mpDebugViz;
     }
-    if(keyEvent.key == KeyboardEvent::Key::Space && keyEvent.type == KeyboardEvent::Type::KeyPressed)
-    {
-        if (VRSystem::instance())
-        {
-            // Cycle through modes
-            uint32_t nextMode = (uint32_t)mRenderMode + 1;
-            mRenderMode = (RenderMode)(nextMode % (mSPSSupported ? 3 : 2));
-            setRenderMode();
-            return true;
-        }
-    }
+
     return mpSceneRenderer ? mpSceneRenderer->onKeyEvent(keyEvent) : false;
 }
 
@@ -372,7 +390,7 @@ bool StereoRendering::onMouseEvent(const MouseEvent& mouseEvent)
     default:
         break;
     }
-    return mpSceneRenderer ? mpSceneRenderer->onMouseEvent(mouseEvent) : false;
+    return mpDebugFoveation ? true : mpSceneRenderer ? mpSceneRenderer->onMouseEvent(mouseEvent) : false;
 }
 
 void StereoRendering::onDataReload()

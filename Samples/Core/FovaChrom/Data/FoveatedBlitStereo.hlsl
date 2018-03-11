@@ -25,8 +25,14 @@ float3 ConvertColor(float3 input) {
     }
 }
 
-float4 main(in float2 texC : TEXCOORD, in float4 fragPos : SV_POSITION) : SV_TARGET
+struct StereoOut {
+    float4 eyeL : SV_TARGET0;
+    float4 eyeR : SV_TARGET1;
+};
+
+StereoOut main(in float2 texC : TEXCOORD, in float4 fragPos : SV_POSITION)
 {
+    StereOut output;
     float FoveaIntensity = distance(gEyePos.xy, fragPos.xy / float2(2560, 1440));
     FoveaIntensity = 1 - pow(1 - FoveaIntensity, 3);
     FoveaIntensity *= 5;
@@ -42,10 +48,7 @@ float4 main(in float2 texC : TEXCOORD, in float4 fragPos : SV_POSITION) : SV_TAR
     float3 rgb = ConvertColor(YCrCb);
 
     if (gEyePos.z == 1.0) {
-        if (FoveaIntensity < 0.05) {
-            rgb = float3(1, 0.6, 0.3);
-        }
-        return float4(rgb, 1.0);
+        return float4(col, 1.0);
     }
     else {
         return float4(rgb, 1.0);
