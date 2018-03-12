@@ -1,0 +1,2296 @@
+diff --git a/Falcor.sln b/Falcor.sln
+index 6bbdbec..28c514a 100644
+--- a/Falcor.sln
++++ b/Falcor.sln
+@@ -1,7 +1,7 @@
+ ﻿
+ Microsoft Visual Studio Solution File, Format Version 12.00
+-# Visual Studio 14
+-VisualStudioVersion = 14.0.25420.1
++# Visual Studio 15
++VisualStudioVersion = 15.0.27130.2010
+ MinimumVisualStudioVersion = 10.0.40219.1
+ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Effects", "Effects", "{C264A780-C046-4866-A7AC-6A9861576F5C}"
+ EndProject
+@@ -23,7 +23,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShaderToy", "Samples\Core\S
+ EndProject
+ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleDeferred", "Samples\Core\SimpleDeferred\SimpleDeferred.vcxproj", "{6E7CBE80-7C06-485B-BEA7-08AEBFE53C22}"
+ EndProject
+-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StereoRendering", "Samples\Core\StereoRendering\StereoRendering.vcxproj", "{7C6C43DE-EEF4-4165-BE92-ED753D3799EE}"
++Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StereoRendering2", "Samples\Core\StereoRendering\StereoRendering.vcxproj", "{7C6C43DE-EEF4-4165-BE92-ED753D3799EE}"
+ EndProject
+ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{152F0E49-0B22-4359-B8FB-BD76093D36DE}"
+ EndProject
+@@ -49,166 +49,282 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HashedAlpha", "Samples\Effe
+ EndProject
+ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LearningWithEmbeddedPython", "Samples\Core\LearningWithEmbeddedPython\LearningWithEmbeddedPython.vcxproj", "{B7D37434-A294-4E67-8420-AD09C54C10EF}"
+ EndProject
++Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FoveatedChroma", "Samples\Core\FovaChrom\FoveatedChroma.vcxproj", "{C565E4F8-B85B-4F34-8FA5-78C7ABDC07F2}"
++EndProject
+ Global
+ 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
++		Debug|x64 = Debug|x64
+ 		DebugD3D12|x64 = DebugD3D12|x64
+ 		DebugVK|x64 = DebugVK|x64
++		Release|x64 = Release|x64
+ 		ReleaseD3D12|x64 = ReleaseD3D12|x64
+ 		ReleaseVK|x64 = ReleaseVK|x64
+ 	EndGlobalSection
+ 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
++		{3B602F0E-3834-4F73-B97D-7DFC91597A98}.Debug|x64.ActiveCfg = DebugVK|x64
++		{3B602F0E-3834-4F73-B97D-7DFC91597A98}.Debug|x64.Build.0 = DebugVK|x64
++		{3B602F0E-3834-4F73-B97D-7DFC91597A98}.Debug|x64.Deploy.0 = DebugVK|x64
+ 		{3B602F0E-3834-4F73-B97D-7DFC91597A98}.DebugD3D12|x64.ActiveCfg = DebugD3D12|x64
+ 		{3B602F0E-3834-4F73-B97D-7DFC91597A98}.DebugD3D12|x64.Build.0 = DebugD3D12|x64
+ 		{3B602F0E-3834-4F73-B97D-7DFC91597A98}.DebugVK|x64.ActiveCfg = DebugVK|x64
+ 		{3B602F0E-3834-4F73-B97D-7DFC91597A98}.DebugVK|x64.Build.0 = DebugVK|x64
++		{3B602F0E-3834-4F73-B97D-7DFC91597A98}.Release|x64.ActiveCfg = ReleaseVK|x64
++		{3B602F0E-3834-4F73-B97D-7DFC91597A98}.Release|x64.Build.0 = ReleaseVK|x64
++		{3B602F0E-3834-4F73-B97D-7DFC91597A98}.Release|x64.Deploy.0 = ReleaseVK|x64
+ 		{3B602F0E-3834-4F73-B97D-7DFC91597A98}.ReleaseD3D12|x64.ActiveCfg = ReleaseD3D12|x64
+ 		{3B602F0E-3834-4F73-B97D-7DFC91597A98}.ReleaseD3D12|x64.Build.0 = ReleaseD3D12|x64
+ 		{3B602F0E-3834-4F73-B97D-7DFC91597A98}.ReleaseVK|x64.ActiveCfg = ReleaseVK|x64
+ 		{3B602F0E-3834-4F73-B97D-7DFC91597A98}.ReleaseVK|x64.Build.0 = ReleaseVK|x64
++		{613640EA-CBBD-4B9D-931C-00110D5C4007}.Debug|x64.ActiveCfg = Debug|x64
++		{613640EA-CBBD-4B9D-931C-00110D5C4007}.Debug|x64.Build.0 = Debug|x64
+ 		{613640EA-CBBD-4B9D-931C-00110D5C4007}.DebugD3D12|x64.ActiveCfg = Debug|x64
+ 		{613640EA-CBBD-4B9D-931C-00110D5C4007}.DebugD3D12|x64.Build.0 = Debug|x64
+ 		{613640EA-CBBD-4B9D-931C-00110D5C4007}.DebugVK|x64.ActiveCfg = Debug|x64
+ 		{613640EA-CBBD-4B9D-931C-00110D5C4007}.DebugVK|x64.Build.0 = Debug|x64
++		{613640EA-CBBD-4B9D-931C-00110D5C4007}.Release|x64.ActiveCfg = Release|x64
++		{613640EA-CBBD-4B9D-931C-00110D5C4007}.Release|x64.Build.0 = Release|x64
+ 		{613640EA-CBBD-4B9D-931C-00110D5C4007}.ReleaseD3D12|x64.ActiveCfg = Release|x64
+ 		{613640EA-CBBD-4B9D-931C-00110D5C4007}.ReleaseD3D12|x64.Build.0 = Release|x64
+ 		{613640EA-CBBD-4B9D-931C-00110D5C4007}.ReleaseVK|x64.ActiveCfg = Release|x64
+ 		{613640EA-CBBD-4B9D-931C-00110D5C4007}.ReleaseVK|x64.Build.0 = Release|x64
++		{282AAB9B-2150-447C-9C27-62C38C23761E}.Debug|x64.ActiveCfg = Debug|x64
++		{282AAB9B-2150-447C-9C27-62C38C23761E}.Debug|x64.Build.0 = Debug|x64
+ 		{282AAB9B-2150-447C-9C27-62C38C23761E}.DebugD3D12|x64.ActiveCfg = Debug|x64
+ 		{282AAB9B-2150-447C-9C27-62C38C23761E}.DebugD3D12|x64.Build.0 = Debug|x64
+ 		{282AAB9B-2150-447C-9C27-62C38C23761E}.DebugVK|x64.ActiveCfg = Debug|x64
+ 		{282AAB9B-2150-447C-9C27-62C38C23761E}.DebugVK|x64.Build.0 = Debug|x64
++		{282AAB9B-2150-447C-9C27-62C38C23761E}.Release|x64.ActiveCfg = Release|x64
++		{282AAB9B-2150-447C-9C27-62C38C23761E}.Release|x64.Build.0 = Release|x64
+ 		{282AAB9B-2150-447C-9C27-62C38C23761E}.ReleaseD3D12|x64.ActiveCfg = Release|x64
+ 		{282AAB9B-2150-447C-9C27-62C38C23761E}.ReleaseD3D12|x64.Build.0 = Release|x64
+ 		{282AAB9B-2150-447C-9C27-62C38C23761E}.ReleaseVK|x64.ActiveCfg = Release|x64
+ 		{282AAB9B-2150-447C-9C27-62C38C23761E}.ReleaseVK|x64.Build.0 = Release|x64
++		{605856E4-34D4-40DF-B859-EEA3A7D52A7B}.Debug|x64.ActiveCfg = Debug|x64
++		{605856E4-34D4-40DF-B859-EEA3A7D52A7B}.Debug|x64.Build.0 = Debug|x64
++		{605856E4-34D4-40DF-B859-EEA3A7D52A7B}.Debug|x64.Deploy.0 = Debug|x64
+ 		{605856E4-34D4-40DF-B859-EEA3A7D52A7B}.DebugD3D12|x64.ActiveCfg = Debug|x64
+ 		{605856E4-34D4-40DF-B859-EEA3A7D52A7B}.DebugD3D12|x64.Build.0 = Debug|x64
+ 		{605856E4-34D4-40DF-B859-EEA3A7D52A7B}.DebugVK|x64.ActiveCfg = Debug|x64
+ 		{605856E4-34D4-40DF-B859-EEA3A7D52A7B}.DebugVK|x64.Build.0 = Debug|x64
++		{605856E4-34D4-40DF-B859-EEA3A7D52A7B}.Release|x64.ActiveCfg = Release|x64
++		{605856E4-34D4-40DF-B859-EEA3A7D52A7B}.Release|x64.Build.0 = Release|x64
++		{605856E4-34D4-40DF-B859-EEA3A7D52A7B}.Release|x64.Deploy.0 = Release|x64
+ 		{605856E4-34D4-40DF-B859-EEA3A7D52A7B}.ReleaseD3D12|x64.ActiveCfg = Release|x64
+ 		{605856E4-34D4-40DF-B859-EEA3A7D52A7B}.ReleaseD3D12|x64.Build.0 = Release|x64
+ 		{605856E4-34D4-40DF-B859-EEA3A7D52A7B}.ReleaseVK|x64.ActiveCfg = Release|x64
+ 		{605856E4-34D4-40DF-B859-EEA3A7D52A7B}.ReleaseVK|x64.Build.0 = Release|x64
++		{E9189681-F552-4811-9B9C-C88E63D21363}.Debug|x64.ActiveCfg = Debug|x64
++		{E9189681-F552-4811-9B9C-C88E63D21363}.Debug|x64.Build.0 = Debug|x64
++		{E9189681-F552-4811-9B9C-C88E63D21363}.Debug|x64.Deploy.0 = Debug|x64
+ 		{E9189681-F552-4811-9B9C-C88E63D21363}.DebugD3D12|x64.ActiveCfg = Debug|x64
+ 		{E9189681-F552-4811-9B9C-C88E63D21363}.DebugD3D12|x64.Build.0 = Debug|x64
+ 		{E9189681-F552-4811-9B9C-C88E63D21363}.DebugVK|x64.ActiveCfg = Debug|x64
+ 		{E9189681-F552-4811-9B9C-C88E63D21363}.DebugVK|x64.Build.0 = Debug|x64
++		{E9189681-F552-4811-9B9C-C88E63D21363}.Release|x64.ActiveCfg = Release|x64
++		{E9189681-F552-4811-9B9C-C88E63D21363}.Release|x64.Build.0 = Release|x64
++		{E9189681-F552-4811-9B9C-C88E63D21363}.Release|x64.Deploy.0 = Release|x64
+ 		{E9189681-F552-4811-9B9C-C88E63D21363}.ReleaseD3D12|x64.ActiveCfg = Release|x64
+ 		{E9189681-F552-4811-9B9C-C88E63D21363}.ReleaseD3D12|x64.Build.0 = Release|x64
+ 		{E9189681-F552-4811-9B9C-C88E63D21363}.ReleaseVK|x64.ActiveCfg = Release|x64
+ 		{E9189681-F552-4811-9B9C-C88E63D21363}.ReleaseVK|x64.Build.0 = Release|x64
++		{8AB4CF3D-9824-4390-8569-B07776C4D1F6}.Debug|x64.ActiveCfg = Debug|x64
++		{8AB4CF3D-9824-4390-8569-B07776C4D1F6}.Debug|x64.Build.0 = Debug|x64
++		{8AB4CF3D-9824-4390-8569-B07776C4D1F6}.Debug|x64.Deploy.0 = Debug|x64
+ 		{8AB4CF3D-9824-4390-8569-B07776C4D1F6}.DebugD3D12|x64.ActiveCfg = Debug|x64
+ 		{8AB4CF3D-9824-4390-8569-B07776C4D1F6}.DebugD3D12|x64.Build.0 = Debug|x64
+ 		{8AB4CF3D-9824-4390-8569-B07776C4D1F6}.DebugVK|x64.ActiveCfg = Debug|x64
+ 		{8AB4CF3D-9824-4390-8569-B07776C4D1F6}.DebugVK|x64.Build.0 = Debug|x64
++		{8AB4CF3D-9824-4390-8569-B07776C4D1F6}.Release|x64.ActiveCfg = Release|x64
++		{8AB4CF3D-9824-4390-8569-B07776C4D1F6}.Release|x64.Build.0 = Release|x64
++		{8AB4CF3D-9824-4390-8569-B07776C4D1F6}.Release|x64.Deploy.0 = Release|x64
+ 		{8AB4CF3D-9824-4390-8569-B07776C4D1F6}.ReleaseD3D12|x64.ActiveCfg = Release|x64
+ 		{8AB4CF3D-9824-4390-8569-B07776C4D1F6}.ReleaseD3D12|x64.Build.0 = Release|x64
+ 		{8AB4CF3D-9824-4390-8569-B07776C4D1F6}.ReleaseVK|x64.ActiveCfg = Release|x64
+ 		{8AB4CF3D-9824-4390-8569-B07776C4D1F6}.ReleaseVK|x64.Build.0 = Release|x64
++		{6E7CBE80-7C06-485B-BEA7-08AEBFE53C22}.Debug|x64.ActiveCfg = Debug|x64
++		{6E7CBE80-7C06-485B-BEA7-08AEBFE53C22}.Debug|x64.Build.0 = Debug|x64
+ 		{6E7CBE80-7C06-485B-BEA7-08AEBFE53C22}.DebugD3D12|x64.ActiveCfg = Debug|x64
+ 		{6E7CBE80-7C06-485B-BEA7-08AEBFE53C22}.DebugD3D12|x64.Build.0 = Debug|x64
+ 		{6E7CBE80-7C06-485B-BEA7-08AEBFE53C22}.DebugVK|x64.ActiveCfg = Debug|x64
+ 		{6E7CBE80-7C06-485B-BEA7-08AEBFE53C22}.DebugVK|x64.Build.0 = Debug|x64
++		{6E7CBE80-7C06-485B-BEA7-08AEBFE53C22}.Release|x64.ActiveCfg = Release|x64
++		{6E7CBE80-7C06-485B-BEA7-08AEBFE53C22}.Release|x64.Build.0 = Release|x64
+ 		{6E7CBE80-7C06-485B-BEA7-08AEBFE53C22}.ReleaseD3D12|x64.ActiveCfg = Release|x64
+ 		{6E7CBE80-7C06-485B-BEA7-08AEBFE53C22}.ReleaseD3D12|x64.Build.0 = Release|x64
+ 		{6E7CBE80-7C06-485B-BEA7-08AEBFE53C22}.ReleaseVK|x64.ActiveCfg = Release|x64
+ 		{6E7CBE80-7C06-485B-BEA7-08AEBFE53C22}.ReleaseVK|x64.Build.0 = Release|x64
++		{7C6C43DE-EEF4-4165-BE92-ED753D3799EE}.Debug|x64.ActiveCfg = Debug|x64
++		{7C6C43DE-EEF4-4165-BE92-ED753D3799EE}.Debug|x64.Build.0 = Debug|x64
+ 		{7C6C43DE-EEF4-4165-BE92-ED753D3799EE}.DebugD3D12|x64.ActiveCfg = Debug|x64
+ 		{7C6C43DE-EEF4-4165-BE92-ED753D3799EE}.DebugD3D12|x64.Build.0 = Debug|x64
+ 		{7C6C43DE-EEF4-4165-BE92-ED753D3799EE}.DebugVK|x64.ActiveCfg = Debug|x64
+ 		{7C6C43DE-EEF4-4165-BE92-ED753D3799EE}.DebugVK|x64.Build.0 = Debug|x64
++		{7C6C43DE-EEF4-4165-BE92-ED753D3799EE}.Release|x64.ActiveCfg = Release|x64
++		{7C6C43DE-EEF4-4165-BE92-ED753D3799EE}.Release|x64.Build.0 = Release|x64
+ 		{7C6C43DE-EEF4-4165-BE92-ED753D3799EE}.ReleaseD3D12|x64.ActiveCfg = Release|x64
+ 		{7C6C43DE-EEF4-4165-BE92-ED753D3799EE}.ReleaseD3D12|x64.Build.0 = Release|x64
+ 		{7C6C43DE-EEF4-4165-BE92-ED753D3799EE}.ReleaseVK|x64.ActiveCfg = Release|x64
+ 		{7C6C43DE-EEF4-4165-BE92-ED753D3799EE}.ReleaseVK|x64.Build.0 = Release|x64
++		{7BFFD891-AAD6-4E5C-8ADC-611C2625DCD9}.Debug|x64.ActiveCfg = Debug|x64
++		{7BFFD891-AAD6-4E5C-8ADC-611C2625DCD9}.Debug|x64.Build.0 = Debug|x64
++		{7BFFD891-AAD6-4E5C-8ADC-611C2625DCD9}.Debug|x64.Deploy.0 = Debug|x64
+ 		{7BFFD891-AAD6-4E5C-8ADC-611C2625DCD9}.DebugD3D12|x64.ActiveCfg = Debug|x64
+ 		{7BFFD891-AAD6-4E5C-8ADC-611C2625DCD9}.DebugD3D12|x64.Build.0 = Debug|x64
+ 		{7BFFD891-AAD6-4E5C-8ADC-611C2625DCD9}.DebugVK|x64.ActiveCfg = Debug|x64
+ 		{7BFFD891-AAD6-4E5C-8ADC-611C2625DCD9}.DebugVK|x64.Build.0 = Debug|x64
++		{7BFFD891-AAD6-4E5C-8ADC-611C2625DCD9}.Release|x64.ActiveCfg = Release|x64
++		{7BFFD891-AAD6-4E5C-8ADC-611C2625DCD9}.Release|x64.Build.0 = Release|x64
++		{7BFFD891-AAD6-4E5C-8ADC-611C2625DCD9}.Release|x64.Deploy.0 = Release|x64
+ 		{7BFFD891-AAD6-4E5C-8ADC-611C2625DCD9}.ReleaseD3D12|x64.ActiveCfg = Release|x64
+ 		{7BFFD891-AAD6-4E5C-8ADC-611C2625DCD9}.ReleaseD3D12|x64.Build.0 = Release|x64
+ 		{7BFFD891-AAD6-4E5C-8ADC-611C2625DCD9}.ReleaseVK|x64.ActiveCfg = Release|x64
+ 		{7BFFD891-AAD6-4E5C-8ADC-611C2625DCD9}.ReleaseVK|x64.Build.0 = Release|x64
++		{DE6A0005-923E-4007-B58C-3C35F690773F}.Debug|x64.ActiveCfg = Debug|x64
++		{DE6A0005-923E-4007-B58C-3C35F690773F}.Debug|x64.Build.0 = Debug|x64
++		{DE6A0005-923E-4007-B58C-3C35F690773F}.Debug|x64.Deploy.0 = Debug|x64
+ 		{DE6A0005-923E-4007-B58C-3C35F690773F}.DebugD3D12|x64.ActiveCfg = Debug|x64
+ 		{DE6A0005-923E-4007-B58C-3C35F690773F}.DebugD3D12|x64.Build.0 = Debug|x64
+ 		{DE6A0005-923E-4007-B58C-3C35F690773F}.DebugVK|x64.ActiveCfg = Debug|x64
+ 		{DE6A0005-923E-4007-B58C-3C35F690773F}.DebugVK|x64.Build.0 = Debug|x64
++		{DE6A0005-923E-4007-B58C-3C35F690773F}.Release|x64.ActiveCfg = Release|x64
++		{DE6A0005-923E-4007-B58C-3C35F690773F}.Release|x64.Build.0 = Release|x64
++		{DE6A0005-923E-4007-B58C-3C35F690773F}.Release|x64.Deploy.0 = Release|x64
+ 		{DE6A0005-923E-4007-B58C-3C35F690773F}.ReleaseD3D12|x64.ActiveCfg = Release|x64
+ 		{DE6A0005-923E-4007-B58C-3C35F690773F}.ReleaseD3D12|x64.Build.0 = Release|x64
+ 		{DE6A0005-923E-4007-B58C-3C35F690773F}.ReleaseVK|x64.ActiveCfg = Release|x64
+ 		{DE6A0005-923E-4007-B58C-3C35F690773F}.ReleaseVK|x64.Build.0 = Release|x64
++		{0C3483E0-B6C1-41BC-B8F9-306F9BA5F287}.Debug|x64.ActiveCfg = Debug|x64
++		{0C3483E0-B6C1-41BC-B8F9-306F9BA5F287}.Debug|x64.Build.0 = Debug|x64
+ 		{0C3483E0-B6C1-41BC-B8F9-306F9BA5F287}.DebugD3D12|x64.ActiveCfg = Debug|x64
+ 		{0C3483E0-B6C1-41BC-B8F9-306F9BA5F287}.DebugD3D12|x64.Build.0 = Debug|x64
+ 		{0C3483E0-B6C1-41BC-B8F9-306F9BA5F287}.DebugVK|x64.ActiveCfg = Debug|x64
+ 		{0C3483E0-B6C1-41BC-B8F9-306F9BA5F287}.DebugVK|x64.Build.0 = Debug|x64
++		{0C3483E0-B6C1-41BC-B8F9-306F9BA5F287}.Release|x64.ActiveCfg = Release|x64
++		{0C3483E0-B6C1-41BC-B8F9-306F9BA5F287}.Release|x64.Build.0 = Release|x64
+ 		{0C3483E0-B6C1-41BC-B8F9-306F9BA5F287}.ReleaseD3D12|x64.ActiveCfg = Release|x64
+ 		{0C3483E0-B6C1-41BC-B8F9-306F9BA5F287}.ReleaseD3D12|x64.Build.0 = Release|x64
+ 		{0C3483E0-B6C1-41BC-B8F9-306F9BA5F287}.ReleaseVK|x64.ActiveCfg = Release|x64
+ 		{0C3483E0-B6C1-41BC-B8F9-306F9BA5F287}.ReleaseVK|x64.Build.0 = Release|x64
++		{28027295-6141-4E2C-A54B-E48E41E19E6F}.Debug|x64.ActiveCfg = Debug|x64
++		{28027295-6141-4E2C-A54B-E48E41E19E6F}.Debug|x64.Build.0 = Debug|x64
++		{28027295-6141-4E2C-A54B-E48E41E19E6F}.Debug|x64.Deploy.0 = Debug|x64
+ 		{28027295-6141-4E2C-A54B-E48E41E19E6F}.DebugD3D12|x64.ActiveCfg = Debug|x64
+ 		{28027295-6141-4E2C-A54B-E48E41E19E6F}.DebugD3D12|x64.Build.0 = Debug|x64
+ 		{28027295-6141-4E2C-A54B-E48E41E19E6F}.DebugVK|x64.ActiveCfg = Debug|x64
+ 		{28027295-6141-4E2C-A54B-E48E41E19E6F}.DebugVK|x64.Build.0 = Debug|x64
++		{28027295-6141-4E2C-A54B-E48E41E19E6F}.Release|x64.ActiveCfg = Release|x64
++		{28027295-6141-4E2C-A54B-E48E41E19E6F}.Release|x64.Build.0 = Release|x64
++		{28027295-6141-4E2C-A54B-E48E41E19E6F}.Release|x64.Deploy.0 = Release|x64
+ 		{28027295-6141-4E2C-A54B-E48E41E19E6F}.ReleaseD3D12|x64.ActiveCfg = Release|x64
+ 		{28027295-6141-4E2C-A54B-E48E41E19E6F}.ReleaseD3D12|x64.Build.0 = Release|x64
+ 		{28027295-6141-4E2C-A54B-E48E41E19E6F}.ReleaseVK|x64.ActiveCfg = Release|x64
+ 		{28027295-6141-4E2C-A54B-E48E41E19E6F}.ReleaseVK|x64.Build.0 = Release|x64
++		{0A6AC638-6567-49F9-B328-66BA201C74B6}.Debug|x64.ActiveCfg = Debug|x64
++		{0A6AC638-6567-49F9-B328-66BA201C74B6}.Debug|x64.Build.0 = Debug|x64
+ 		{0A6AC638-6567-49F9-B328-66BA201C74B6}.DebugD3D12|x64.ActiveCfg = Debug|x64
+ 		{0A6AC638-6567-49F9-B328-66BA201C74B6}.DebugD3D12|x64.Build.0 = Debug|x64
+ 		{0A6AC638-6567-49F9-B328-66BA201C74B6}.DebugVK|x64.ActiveCfg = Debug|x64
+ 		{0A6AC638-6567-49F9-B328-66BA201C74B6}.DebugVK|x64.Build.0 = Debug|x64
++		{0A6AC638-6567-49F9-B328-66BA201C74B6}.Release|x64.ActiveCfg = Release|x64
++		{0A6AC638-6567-49F9-B328-66BA201C74B6}.Release|x64.Build.0 = Release|x64
+ 		{0A6AC638-6567-49F9-B328-66BA201C74B6}.ReleaseD3D12|x64.ActiveCfg = Release|x64
+ 		{0A6AC638-6567-49F9-B328-66BA201C74B6}.ReleaseD3D12|x64.Build.0 = Release|x64
+ 		{0A6AC638-6567-49F9-B328-66BA201C74B6}.ReleaseVK|x64.ActiveCfg = Release|x64
+ 		{0A6AC638-6567-49F9-B328-66BA201C74B6}.ReleaseVK|x64.Build.0 = Release|x64
++		{283B18E4-08BC-4CDE-BDB6-B3B70FB7FC18}.Debug|x64.ActiveCfg = Debug|x64
++		{283B18E4-08BC-4CDE-BDB6-B3B70FB7FC18}.Debug|x64.Build.0 = Debug|x64
++		{283B18E4-08BC-4CDE-BDB6-B3B70FB7FC18}.Debug|x64.Deploy.0 = Debug|x64
+ 		{283B18E4-08BC-4CDE-BDB6-B3B70FB7FC18}.DebugD3D12|x64.ActiveCfg = Debug|x64
+ 		{283B18E4-08BC-4CDE-BDB6-B3B70FB7FC18}.DebugD3D12|x64.Build.0 = Debug|x64
+ 		{283B18E4-08BC-4CDE-BDB6-B3B70FB7FC18}.DebugVK|x64.ActiveCfg = Debug|x64
+ 		{283B18E4-08BC-4CDE-BDB6-B3B70FB7FC18}.DebugVK|x64.Build.0 = Debug|x64
++		{283B18E4-08BC-4CDE-BDB6-B3B70FB7FC18}.Release|x64.ActiveCfg = Release|x64
++		{283B18E4-08BC-4CDE-BDB6-B3B70FB7FC18}.Release|x64.Build.0 = Release|x64
++		{283B18E4-08BC-4CDE-BDB6-B3B70FB7FC18}.Release|x64.Deploy.0 = Release|x64
+ 		{283B18E4-08BC-4CDE-BDB6-B3B70FB7FC18}.ReleaseD3D12|x64.ActiveCfg = Release|x64
+ 		{283B18E4-08BC-4CDE-BDB6-B3B70FB7FC18}.ReleaseD3D12|x64.Build.0 = Release|x64
+ 		{283B18E4-08BC-4CDE-BDB6-B3B70FB7FC18}.ReleaseVK|x64.ActiveCfg = Release|x64
+ 		{283B18E4-08BC-4CDE-BDB6-B3B70FB7FC18}.ReleaseVK|x64.Build.0 = Release|x64
++		{E6F10A52-9C29-47B0-8BAE-46C146EB7163}.Debug|x64.ActiveCfg = Debug|x64
++		{E6F10A52-9C29-47B0-8BAE-46C146EB7163}.Debug|x64.Build.0 = Debug|x64
++		{E6F10A52-9C29-47B0-8BAE-46C146EB7163}.Debug|x64.Deploy.0 = Debug|x64
+ 		{E6F10A52-9C29-47B0-8BAE-46C146EB7163}.DebugD3D12|x64.ActiveCfg = Debug|x64
+ 		{E6F10A52-9C29-47B0-8BAE-46C146EB7163}.DebugD3D12|x64.Build.0 = Debug|x64
+ 		{E6F10A52-9C29-47B0-8BAE-46C146EB7163}.DebugVK|x64.ActiveCfg = Debug|x64
+ 		{E6F10A52-9C29-47B0-8BAE-46C146EB7163}.DebugVK|x64.Build.0 = Debug|x64
++		{E6F10A52-9C29-47B0-8BAE-46C146EB7163}.Release|x64.ActiveCfg = Release|x64
++		{E6F10A52-9C29-47B0-8BAE-46C146EB7163}.Release|x64.Build.0 = Release|x64
++		{E6F10A52-9C29-47B0-8BAE-46C146EB7163}.Release|x64.Deploy.0 = Release|x64
+ 		{E6F10A52-9C29-47B0-8BAE-46C146EB7163}.ReleaseD3D12|x64.ActiveCfg = Release|x64
+ 		{E6F10A52-9C29-47B0-8BAE-46C146EB7163}.ReleaseD3D12|x64.Build.0 = Release|x64
+ 		{E6F10A52-9C29-47B0-8BAE-46C146EB7163}.ReleaseVK|x64.ActiveCfg = Release|x64
+ 		{E6F10A52-9C29-47B0-8BAE-46C146EB7163}.ReleaseVK|x64.Build.0 = Release|x64
++		{ADDD1F96-AE44-40BA-9942-0F056F96FA4B}.Debug|x64.ActiveCfg = Debug|x64
++		{ADDD1F96-AE44-40BA-9942-0F056F96FA4B}.Debug|x64.Build.0 = Debug|x64
+ 		{ADDD1F96-AE44-40BA-9942-0F056F96FA4B}.DebugD3D12|x64.ActiveCfg = Debug|x64
+ 		{ADDD1F96-AE44-40BA-9942-0F056F96FA4B}.DebugD3D12|x64.Build.0 = Debug|x64
+ 		{ADDD1F96-AE44-40BA-9942-0F056F96FA4B}.DebugVK|x64.ActiveCfg = Debug|x64
+ 		{ADDD1F96-AE44-40BA-9942-0F056F96FA4B}.DebugVK|x64.Build.0 = Debug|x64
++		{ADDD1F96-AE44-40BA-9942-0F056F96FA4B}.Release|x64.ActiveCfg = Release|x64
++		{ADDD1F96-AE44-40BA-9942-0F056F96FA4B}.Release|x64.Build.0 = Release|x64
+ 		{ADDD1F96-AE44-40BA-9942-0F056F96FA4B}.ReleaseD3D12|x64.ActiveCfg = Release|x64
+ 		{ADDD1F96-AE44-40BA-9942-0F056F96FA4B}.ReleaseD3D12|x64.Build.0 = Release|x64
+ 		{ADDD1F96-AE44-40BA-9942-0F056F96FA4B}.ReleaseVK|x64.ActiveCfg = Release|x64
+ 		{ADDD1F96-AE44-40BA-9942-0F056F96FA4B}.ReleaseVK|x64.Build.0 = Release|x64
++		{4BD89013-BE22-47CC-BCEC-8A406C8061A0}.Debug|x64.ActiveCfg = Debug|x64
++		{4BD89013-BE22-47CC-BCEC-8A406C8061A0}.Debug|x64.Build.0 = Debug|x64
++		{4BD89013-BE22-47CC-BCEC-8A406C8061A0}.Debug|x64.Deploy.0 = Debug|x64
+ 		{4BD89013-BE22-47CC-BCEC-8A406C8061A0}.DebugD3D12|x64.ActiveCfg = Debug|x64
+ 		{4BD89013-BE22-47CC-BCEC-8A406C8061A0}.DebugD3D12|x64.Build.0 = Debug|x64
+ 		{4BD89013-BE22-47CC-BCEC-8A406C8061A0}.DebugVK|x64.ActiveCfg = Debug|x64
+ 		{4BD89013-BE22-47CC-BCEC-8A406C8061A0}.DebugVK|x64.Build.0 = Debug|x64
++		{4BD89013-BE22-47CC-BCEC-8A406C8061A0}.Release|x64.ActiveCfg = Release|x64
++		{4BD89013-BE22-47CC-BCEC-8A406C8061A0}.Release|x64.Build.0 = Release|x64
++		{4BD89013-BE22-47CC-BCEC-8A406C8061A0}.Release|x64.Deploy.0 = Release|x64
+ 		{4BD89013-BE22-47CC-BCEC-8A406C8061A0}.ReleaseD3D12|x64.ActiveCfg = Release|x64
+ 		{4BD89013-BE22-47CC-BCEC-8A406C8061A0}.ReleaseD3D12|x64.Build.0 = Release|x64
+ 		{4BD89013-BE22-47CC-BCEC-8A406C8061A0}.ReleaseVK|x64.ActiveCfg = Release|x64
+ 		{4BD89013-BE22-47CC-BCEC-8A406C8061A0}.ReleaseVK|x64.Build.0 = Release|x64
++		{1EAB59EA-E69B-4ADD-B98B-3E3E8FC1D988}.Debug|x64.ActiveCfg = Debug|x64
++		{1EAB59EA-E69B-4ADD-B98B-3E3E8FC1D988}.Debug|x64.Build.0 = Debug|x64
++		{1EAB59EA-E69B-4ADD-B98B-3E3E8FC1D988}.Debug|x64.Deploy.0 = Debug|x64
+ 		{1EAB59EA-E69B-4ADD-B98B-3E3E8FC1D988}.DebugD3D12|x64.ActiveCfg = Debug|x64
+ 		{1EAB59EA-E69B-4ADD-B98B-3E3E8FC1D988}.DebugD3D12|x64.Build.0 = Debug|x64
+ 		{1EAB59EA-E69B-4ADD-B98B-3E3E8FC1D988}.DebugVK|x64.ActiveCfg = Debug|x64
+ 		{1EAB59EA-E69B-4ADD-B98B-3E3E8FC1D988}.DebugVK|x64.Build.0 = Debug|x64
++		{1EAB59EA-E69B-4ADD-B98B-3E3E8FC1D988}.Release|x64.ActiveCfg = Release|x64
++		{1EAB59EA-E69B-4ADD-B98B-3E3E8FC1D988}.Release|x64.Build.0 = Release|x64
++		{1EAB59EA-E69B-4ADD-B98B-3E3E8FC1D988}.Release|x64.Deploy.0 = Release|x64
+ 		{1EAB59EA-E69B-4ADD-B98B-3E3E8FC1D988}.ReleaseD3D12|x64.ActiveCfg = Release|x64
+ 		{1EAB59EA-E69B-4ADD-B98B-3E3E8FC1D988}.ReleaseD3D12|x64.Build.0 = Release|x64
+ 		{1EAB59EA-E69B-4ADD-B98B-3E3E8FC1D988}.ReleaseVK|x64.ActiveCfg = Release|x64
+ 		{1EAB59EA-E69B-4ADD-B98B-3E3E8FC1D988}.ReleaseVK|x64.Build.0 = Release|x64
++		{B7D37434-A294-4E67-8420-AD09C54C10EF}.Debug|x64.ActiveCfg = Debug|x64
++		{B7D37434-A294-4E67-8420-AD09C54C10EF}.Debug|x64.Build.0 = Debug|x64
++		{B7D37434-A294-4E67-8420-AD09C54C10EF}.Debug|x64.Deploy.0 = Debug|x64
+ 		{B7D37434-A294-4E67-8420-AD09C54C10EF}.DebugD3D12|x64.ActiveCfg = Debug|x64
+ 		{B7D37434-A294-4E67-8420-AD09C54C10EF}.DebugD3D12|x64.Build.0 = Debug|x64
+ 		{B7D37434-A294-4E67-8420-AD09C54C10EF}.DebugVK|x64.ActiveCfg = Debug|x64
+ 		{B7D37434-A294-4E67-8420-AD09C54C10EF}.DebugVK|x64.Build.0 = Debug|x64
++		{B7D37434-A294-4E67-8420-AD09C54C10EF}.Release|x64.ActiveCfg = Release|x64
++		{B7D37434-A294-4E67-8420-AD09C54C10EF}.Release|x64.Build.0 = Release|x64
++		{B7D37434-A294-4E67-8420-AD09C54C10EF}.Release|x64.Deploy.0 = Release|x64
+ 		{B7D37434-A294-4E67-8420-AD09C54C10EF}.ReleaseD3D12|x64.ActiveCfg = Release|x64
+ 		{B7D37434-A294-4E67-8420-AD09C54C10EF}.ReleaseD3D12|x64.Build.0 = Release|x64
+ 		{B7D37434-A294-4E67-8420-AD09C54C10EF}.ReleaseVK|x64.ActiveCfg = Release|x64
+ 		{B7D37434-A294-4E67-8420-AD09C54C10EF}.ReleaseVK|x64.Build.0 = Release|x64
++		{C565E4F8-B85B-4F34-8FA5-78C7ABDC07F2}.Debug|x64.ActiveCfg = Debug|x64
++		{C565E4F8-B85B-4F34-8FA5-78C7ABDC07F2}.Debug|x64.Build.0 = Debug|x64
++		{C565E4F8-B85B-4F34-8FA5-78C7ABDC07F2}.DebugD3D12|x64.ActiveCfg = Debug|x64
++		{C565E4F8-B85B-4F34-8FA5-78C7ABDC07F2}.DebugD3D12|x64.Build.0 = Debug|x64
++		{C565E4F8-B85B-4F34-8FA5-78C7ABDC07F2}.DebugVK|x64.ActiveCfg = Debug|x64
++		{C565E4F8-B85B-4F34-8FA5-78C7ABDC07F2}.DebugVK|x64.Build.0 = Debug|x64
++		{C565E4F8-B85B-4F34-8FA5-78C7ABDC07F2}.Release|x64.ActiveCfg = Release|x64
++		{C565E4F8-B85B-4F34-8FA5-78C7ABDC07F2}.Release|x64.Build.0 = Release|x64
++		{C565E4F8-B85B-4F34-8FA5-78C7ABDC07F2}.ReleaseD3D12|x64.ActiveCfg = Release|x64
++		{C565E4F8-B85B-4F34-8FA5-78C7ABDC07F2}.ReleaseD3D12|x64.Build.0 = Release|x64
++		{C565E4F8-B85B-4F34-8FA5-78C7ABDC07F2}.ReleaseVK|x64.ActiveCfg = Release|x64
++		{C565E4F8-B85B-4F34-8FA5-78C7ABDC07F2}.ReleaseVK|x64.Build.0 = Release|x64
+ 	EndGlobalSection
+ 	GlobalSection(SolutionProperties) = preSolution
+ 		HideSolutionNode = FALSE
+@@ -235,5 +351,9 @@ Global
+ 		{4BD89013-BE22-47CC-BCEC-8A406C8061A0} = {C264A780-C046-4866-A7AC-6A9861576F5C}
+ 		{1EAB59EA-E69B-4ADD-B98B-3E3E8FC1D988} = {C264A780-C046-4866-A7AC-6A9861576F5C}
+ 		{B7D37434-A294-4E67-8420-AD09C54C10EF} = {CA90E299-AACA-4629-AA2C-E5DA38FFB78D}
++		{C565E4F8-B85B-4F34-8FA5-78C7ABDC07F2} = {CA90E299-AACA-4629-AA2C-E5DA38FFB78D}
++	EndGlobalSection
++	GlobalSection(ExtensibilityGlobals) = postSolution
++		SolutionGuid = {98443B94-C851-44C0-814C-E3D85084D4CA}
+ 	EndGlobalSection
+ EndGlobal
+diff --git a/Framework/Source/Falcor.vcxproj b/Framework/Source/Falcor.vcxproj
+index d610844..39a3ea3 100644
+--- a/Framework/Source/Falcor.vcxproj
++++ b/Framework/Source/Falcor.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="DebugD3D12|x64">
+       <Configuration>DebugD3D12</Configuration>
+@@ -1055,32 +1055,32 @@
+     <ProjectGuid>{3B602F0E-3834-4F73-B97D-7DFC91597A98}</ProjectGuid>
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>Falcor</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugD3D12|x64'" Label="Configuration">
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugVK|x64'" Label="Configuration">
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseD3D12|x64'" Label="Configuration">
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>false</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseVK|x64'" Label="Configuration">
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+diff --git a/Framework/Source/Utils/Platform/Windows/ProgressBarWin.cpp b/Framework/Source/Utils/Platform/Windows/ProgressBarWin.cpp
+index 4e929e6..a8e9988 100644
+--- a/Framework/Source/Utils/Platform/Windows/ProgressBarWin.cpp
++++ b/Framework/Source/Utils/Platform/Windows/ProgressBarWin.cpp
+@@ -92,7 +92,7 @@ namespace Falcor
+             if (j == 50 && msgList.size())
+             {
+                 j = 0;
+-                SetWindowTextA(pData->hwnd, msgList[pData->dist(pData->rng)].c_str());
++                //SetWindowTextA(pData->hwnd, msgList[pData->dist(pData->rng)].c_str());
+             }
+             MSG msg;
+             while (PeekMessage(&msg, pData->hwnd, 0, 0, PM_REMOVE))
+diff --git a/Samples/Core/ComputeShader/ComputeShader.vcxproj b/Samples/Core/ComputeShader/ComputeShader.vcxproj
+index da9180a..316d10a 100644
+--- a/Samples/Core/ComputeShader/ComputeShader.vcxproj
++++ b/Samples/Core/ComputeShader/ComputeShader.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|x64">
+       <Configuration>Debug</Configuration>
+@@ -34,19 +34,19 @@
+     <ProjectGuid>{283B18E4-08BC-4CDE-BDB6-B3B70FB7FC18}</ProjectGuid>
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>ComputeShader</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+diff --git a/Samples/Core/FovaChrom/.vs/FoveatedChroma/v15/Browse.VC.db b/Samples/Core/FovaChrom/.vs/FoveatedChroma/v15/Browse.VC.db
+new file mode 100644
+index 0000000..d4df353
+Binary files /dev/null and b/Samples/Core/FovaChrom/.vs/FoveatedChroma/v15/Browse.VC.db differ
+diff --git a/Samples/Core/FovaChrom/Data/ColorSplit.ps.hlsl b/Samples/Core/FovaChrom/Data/ColorSplit.ps.hlsl
+new file mode 100644
+index 0000000..eaa7e8d
+--- /dev/null
++++ b/Samples/Core/FovaChrom/Data/ColorSplit.ps.hlsl
+@@ -0,0 +1,33 @@
++#include "Conversions.hlsli"
++
++cbuffer PerImageCB : register(b0)
++{
++    Texture2D		gTexture;
++    SamplerState	gSampler;
++};
++
++cbuffer FoveatedCB : register(b1)
++{
++    float4 gEyePos;
++};
++
++float3 ConvertColor(float3 input) {
++    int colorspace = int(gEyePos.w);
++
++    if (colorspace == 0) {
++        return RGBToYCoCg(input);
++    }
++    else if (colorspace == 1) {
++        return RGBToYCoCg24(input);
++    }
++    else {
++        return input.yzy;
++    }
++}
++
++float4 main(in float2 texC : TEXCOORD) : SV_TARGET
++{
++    float4 color = gTexture.Sample(gSampler, texC);
++
++    return float4(ConvertColor(color.xyz), 1.0);
++}
+diff --git a/Samples/Core/FovaChrom/Data/Conversions.hlsli b/Samples/Core/FovaChrom/Data/Conversions.hlsli
+new file mode 100644
+index 0000000..d2f3f50
+--- /dev/null
++++ b/Samples/Core/FovaChrom/Data/Conversions.hlsli
+@@ -0,0 +1,85 @@
++void forward_lift(float x, float y, out float average, out float diff) {
++    diff = (fmod(y - x, 1));
++    average = (fmod((x + (diff / 2.0)), 1));
++}
++
++void reverse_lift(out float x, out float y, float average, float diff) {
++    x = (fmod(average - (diff / 2.0), 1));
++    y = (fmod(x + diff, 1));
++}
++
++float3 RGBToYCoCg24(float3 color) {
++    float temp, Co, Y, Cg;
++    forward_lift(color.r, color.b, temp, Co);
++    forward_lift(color.g, temp, Y, Cg);
++    return float3(Y, Cg, Co);
++}
++
++float3 YCoCg24ToRGB(float3 color) {
++    float temp, r, g, b;
++    reverse_lift(g, temp, color.x, color.z);
++    reverse_lift(r, b, temp, color.y);
++    return float3(r, g, b);
++}
++
++#define CHROMA_BIAS (0.5 * 256.0 / 255.0)
++
++float3 RGBToYCoCg(float3 rgb)
++{
++    float3 YCoCg;
++    YCoCg.x = dot(rgb, float3(0.25, 0.5, 0.25));
++    YCoCg.y = dot(rgb, float3(0.5, 0.0, -0.5)) + CHROMA_BIAS;
++    YCoCg.z = dot(rgb, float3(-0.25, 0.5, -0.25)) + CHROMA_BIAS;
++
++    return YCoCg;
++}
++
++float3 YCoCgToRGB(float3 YCoCg)
++{
++    float Y = YCoCg.x;
++    float Co = YCoCg.y - CHROMA_BIAS;
++    float Cg = YCoCg.z - CHROMA_BIAS;
++
++    float3 rgb;
++    rgb.r = Y + Co - Cg;
++    rgb.g = Y + Cg;
++    rgb.b = Y - Co - Cg;
++
++    return rgb;
++}
++
++float3 ColorFn1DfiveC(float x, int c)
++{
++    x = saturate(x);
++
++    float r, g, b;
++    switch (c)
++    {
++    case 1:
++        r = 0.22 + 0.71*x; g = 0.036 + 0.95*x; b = 0.5 + 0.49*x;
++        break;
++
++    case 2:
++        g = 0.1 + 0.8*x;
++        r = 0.48 + x * (1.7 + (-1.8 + 0.56 * x) * x);
++        b = x * (-0.21 + x);
++        break;
++
++    case 3:
++        g = 0.33 + 0.69*x; b = 0.059 + 0.78*x;
++        r = x * (-0.21 + (2.6 - 1.5 * x) * x);
++        break;
++
++    case 4:
++        g = 0.22 + 0.75*x;
++        r = 0.033 + x * (-0.35 + (2.7 - 1.5 * x) * x);
++        b = 0.45 + (0.97 - 0.46 * x) * x;
++        break;
++
++    default:
++        r = g = b = 0.025 + 0.96*x;
++        break;
++    }
++    return float3(r, g, b);
++}
++
+diff --git a/Samples/Core/FovaChrom/Data/FoveatedBlit.ps.hlsl b/Samples/Core/FovaChrom/Data/FoveatedBlit.ps.hlsl
+new file mode 100644
+index 0000000..4d00462
+--- /dev/null
++++ b/Samples/Core/FovaChrom/Data/FoveatedBlit.ps.hlsl
+@@ -0,0 +1,50 @@
++#include "Conversions.hlsli"
++
++cbuffer PerImageCB : register(b0)
++{
++    Texture2D		gTexture;
++    SamplerState	gSampler;
++};
++
++cbuffer FoveatedCB : register(b1)
++{
++    float4 gEyePos;
++};
++
++float3 ConvertColor(float3 input) {
++    int colorspace = int(gEyePos.w);
++
++    if (colorspace == 0) {
++        return YCoCgToRGB(input);
++    }
++    else if (colorspace == 1) {
++        return YCoCg24ToRGB(input);
++    }
++    else {
++        return input.yzy;
++    }
++}
++
++float4 main(in float2 texC : TEXCOORD, in float4 fragPos : SV_POSITION) : SV_TARGET
++{
++    float FoveaIntensity = distance(gEyePos.xy, fragPos.xy / float2(1600, 1024));
++    FoveaIntensity = 1 - pow(1 - FoveaIntensity, 3);
++    FoveaIntensity *= 5;
++
++    float3 col = ColorFn1DfiveC(frac(FoveaIntensity), int(FoveaIntensity));
++    float2 CrCb = gTexture.SampleLevel(gSampler, texC, FoveaIntensity).yz;
++    float Y = gTexture.Sample(gSampler, texC).x;
++    float Cr = CrCb.x;
++    float Cb = CrCb.y;
++
++    float3 YCrCb = float3(Y, Cr, Cb);
++
++    float3 rgb = ConvertColor(YCrCb);
++
++    if (gEyePos.z == 1.0) {
++        return float4(col, 1.0);
++    }
++    else {
++        return float4(rgb, 1.0);
++    }
++}
+diff --git a/Samples/Core/FovaChrom/Data/StereoRendering.gs.hlsl b/Samples/Core/FovaChrom/Data/StereoRendering.gs.hlsl
+new file mode 100644
+index 0000000..5e1d99a
+--- /dev/null
++++ b/Samples/Core/FovaChrom/Data/StereoRendering.gs.hlsl
+@@ -0,0 +1,69 @@
++/***************************************************************************
++# Copyright (c) 2017, NVIDIA CORPORATION. All rights reserved.
++#
++# Redistribution and use in source and binary forms, with or without
++# modification, are permitted provided that the following conditions
++# are met:
++#  * Redistributions of source code must retain the above copyright
++#    notice, this list of conditions and the following disclaimer.
++#  * Redistributions in binary form must reproduce the above copyright
++#    notice, this list of conditions and the following disclaimer in the
++#    documentation and/or other materials provided with the distribution.
++#  * Neither the name of NVIDIA CORPORATION nor the names of its
++#    contributors may be used to endorse or promote products derived
++#    from this software without specific prior written permission.
++#
++# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
++# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++# PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
++# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
++# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
++# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
++# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
++# OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
++# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++***************************************************************************/
++__import ShaderCommon;
++__import DefaultVS;
++
++struct GS_OUT
++{
++    VS_OUT vsOut;
++    uint rtIndex : SV_RenderTargetArrayIndex;
++};
++
++[maxvertexcount(6)]
++void main(triangle VS_OUT input[3], inout TriangleStream<GS_OUT> outStream)
++{
++    GS_OUT gsOut;
++
++    // Left Eye
++    for (int i = 0; i < 3; i++)
++    {
++        gsOut.rtIndex = 0;
++        gsOut.vsOut = input[i];
++
++        float4 posW = float4(input[i].posW, 1.0f);
++        gsOut.vsOut.posH = mul(posW, gCam.viewProjMat);
++        gsOut.vsOut.prevPosH = mul(posW, gCam.prevViewProjMat);
++
++        outStream.Append(gsOut);
++    }
++    outStream.RestartStrip();
++
++    // Right Eye
++    for (i = 0; i < 3; i++) 
++    {
++        gsOut.rtIndex = 1;
++        gsOut.vsOut = input[i];
++
++        float4 posW = float4(input[i].posW, 1.0f);
++        gsOut.vsOut.posH = mul(posW, gCam.rightEyeViewProjMat);
++        gsOut.vsOut.prevPosH = mul(posW, gCam.rightEyePrevViewProjMat);
++
++        outStream.Append(gsOut);
++    }
++    outStream.RestartStrip();
++}
+diff --git a/Samples/Core/FovaChrom/Data/StereoRendering.ps.hlsl b/Samples/Core/FovaChrom/Data/StereoRendering.ps.hlsl
+new file mode 100644
+index 0000000..056b2c9
+--- /dev/null
++++ b/Samples/Core/FovaChrom/Data/StereoRendering.ps.hlsl
+@@ -0,0 +1,50 @@
++/***************************************************************************
++# Copyright (c) 2017, NVIDIA CORPORATION. All rights reserved.
++#
++# Redistribution and use in source and binary forms, with or without
++# modification, are permitted provided that the following conditions
++# are met:
++#  * Redistributions of source code must retain the above copyright
++#    notice, this list of conditions and the following disclaimer.
++#  * Redistributions in binary form must reproduce the above copyright
++#    notice, this list of conditions and the following disclaimer in the
++#    documentation and/or other materials provided with the distribution.
++#  * Neither the name of NVIDIA CORPORATION nor the names of its
++#    contributors may be used to endorse or promote products derived
++#    from this software without specific prior written permission.
++#
++# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
++# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++# PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
++# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
++# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
++# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
++# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
++# OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
++# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++***************************************************************************/
++__import ShaderCommon;
++__import Shading;
++__import DefaultVS;
++
++float4 main(VS_OUT vOut) : SV_TARGET
++{
++    ShadingAttribs shAttr;
++    prepareShadingAttribs(gMaterial, vOut.posW, gCam.position, vOut.normalW, vOut.bitangentW, vOut.texC, 0, shAttr);
++
++    ShadingOutput result;
++    float4 fragColor = float4(0, 0, 0, 1);
++
++    for (uint l = 0; l < gLightsCount; l++)
++    {
++        evalMaterial(shAttr, gLights[l], result, l == 0);
++        fragColor.rgb += result.diffuseAlbedo * result.diffuseIllumination;
++        fragColor.rgb += result.specularAlbedo * result.specularIllumination;
++    }
++
++    fragColor.rgb += result.diffuseAlbedo * 0.1;
++
++    return fragColor;
++}
+diff --git a/Samples/Core/FovaChrom/Data/StereoRendering.vs.hlsl b/Samples/Core/FovaChrom/Data/StereoRendering.vs.hlsl
+new file mode 100644
+index 0000000..7cc841f
+--- /dev/null
++++ b/Samples/Core/FovaChrom/Data/StereoRendering.vs.hlsl
+@@ -0,0 +1,64 @@
++/***************************************************************************
++# Copyright (c) 2017, NVIDIA CORPORATION. All rights reserved.
++#
++# Redistribution and use in source and binary forms, with or without
++# modification, are permitted provided that the following conditions
++# are met:
++#  * Redistributions of source code must retain the above copyright
++#    notice, this list of conditions and the following disclaimer.
++#  * Redistributions in binary form must reproduce the above copyright
++#    notice, this list of conditions and the following disclaimer in the
++#    documentation and/or other materials provided with the distribution.
++#  * Neither the name of NVIDIA CORPORATION nor the names of its
++#    contributors may be used to endorse or promote products derived
++#    from this software without specific prior written permission.
++#
++# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
++# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++# PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
++# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
++# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
++# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
++# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
++# OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
++# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++***************************************************************************/
++#include "VertexAttrib.h"
++__import ShaderCommon;
++__import DefaultVS;
++
++VS_OUT main(VS_IN vIn)
++{
++    VS_OUT vOut = defaultVS(vIn);
++/*    VS_OUT vOut;
++
++    // Filled out in geometry shader
++    vOut.posH = float4(0.0f, 0.0f, 0.0f, 0.0f);
++    vOut.prevPosH = float4(0.0f, 0.0f, 0.0f, 0.0f);
++
++    float4x4 worldMat = getWorldMat(vIn);
++    float4 posW = mul(vIn.pos, worldMat);
++    vOut.posW = posW.xyz;
++
++#ifdef HAS_TEXCRD
++    vOut.texC = vIn.texC;
++#else
++    vOut.texC = 0;
++#endif
++
++#ifdef HAS_COLORS
++    vOut.colorV = vIn.color;
++#else
++    vOut.colorV = 0;
++#endif
++
++
++#ifdef HAS_NORMALS
++    vOut.normalW = mul(vIn.normal, getWorldInvTransposeMat(vIn)).xyz;
++    vOut.bitangentW = mul(vIn.bitangent, (float3x3)worldMat).xyz;
++#endif*/
++
++    return vOut;
++}
+diff --git a/Samples/Core/FovaChrom/FoveatedChroma.cpp b/Samples/Core/FovaChrom/FoveatedChroma.cpp
+new file mode 100644
+index 0000000..34de85c
+--- /dev/null
++++ b/Samples/Core/FovaChrom/FoveatedChroma.cpp
+@@ -0,0 +1,411 @@
++/***************************************************************************
++# Copyright (c) 2015, NVIDIA CORPORATION. All rights reserved.
++#
++# Redistribution and use in source and binary forms, with or without
++# modification, are permitted provided that the following conditions
++# are met:
++#  * Redistributions of source code must retain the above copyright
++#    notice, this list of conditions and the following disclaimer.
++#  * Redistributions in binary form must reproduce the above copyright
++#    notice, this list of conditions and the following disclaimer in the
++#    documentation and/or other materials provided with the distribution.
++#  * Neither the name of NVIDIA CORPORATION nor the names of its
++#    contributors may be used to endorse or promote products derived
++#    from this software without specific prior written permission.
++#
++# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
++# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++# PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
++# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
++# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
++# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
++# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
++# OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
++# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++***************************************************************************/
++#include "FoveatedChroma.h"
++
++static const glm::vec4 kClearColor(0.38f, 0.52f, 0.10f, 1);
++
++
++void StereoRendering::onGuiRender()
++{
++    if (mpGui->addButton("Load Scene"))
++    {
++        loadScene();
++    }
++
++    if(VRSystem::instance())
++    {
++        mpGui->addCheckBox("Display VR FBO", mShowStereoViews);
++    }
++
++    if (mpGui->addDropdown("Submission Mode", mSubmitModeList, (uint32_t&)mRenderMode))
++    {
++        setRenderMode();
++    }
++
++    if (mpGui->addDropdown("Colorspace", mColorSpaceList, (uint32_t&)mpColorSpace))
++    {
++    }
++
++    if (mpEditor)
++    {
++        mpEditor->renderGui(mpGui.get());
++    }
++}
++
++bool displaySpsWarning()
++{
++#ifdef FALCOR_D3D12
++    logWarning("The sample will run faster if you use NVIDIA's Single Pass Stereo\nIf you have an NVIDIA GPU, download the NVAPI SDK and enable NVAPI support in FalcorConfig.h.\nCheck the readme for instructions");
++#endif
++    return false;
++}
++
++void StereoRendering::initVR()
++{
++    mColorSpaceList.clear();
++    mColorSpaceList.push_back({ (int)ColorSpace::YCoCg, "YCoCg" });
++    mColorSpaceList.push_back({ (int)ColorSpace::YCoCg24, "YCoCg24" });
++
++    mSubmitModeList.clear();
++    mSubmitModeList.push_back({ (int)RenderMode::Mono, "Render to Screen" });
++
++    if (VRSystem::instance())
++    {
++        // Create the FBOs
++        Fbo::Desc vrFboDesc;
++
++        vrFboDesc.setColorTarget(0, mpDefaultFBO->getColorTexture(0)->getFormat());
++        vrFboDesc.setDepthStencilTarget(mpDefaultFBO->getDepthStencilTexture()->getFormat());
++
++        mpVrFbo = VrFbo::create(vrFboDesc);
++
++        mSubmitModeList.push_back({ (int)RenderMode::Stereo, "Stereo" });
++
++        if (mSPSSupported)
++        {
++            mSubmitModeList.push_back({ (int)RenderMode::SinglePassStereo, "Single Pass Stereo" });
++        }
++        else
++        {
++            displaySpsWarning();
++        }
++    }
++    else
++    {
++        msgBox("Can't initialize the VR system. Make sure that your HMD is connected properly");
++    }
++}
++
++void StereoRendering::submitStereo(bool singlePassStereo)
++{
++    PROFILE(STEREO);
++    VRSystem::instance()->refresh();
++
++    // Clear the FBO
++    mpRenderContext->clearFbo(mpVrFbo->getFbo().get(), kClearColor, 1.0f, 0, FboAttachmentType::All);
++    
++    // update state
++    if (singlePassStereo)
++    {
++        mpGraphicsState->setProgram(mpMonoSPSProgram);
++        mpRenderContext->setGraphicsVars(mpMonoSPSVars);
++    }
++    else
++    {
++        mpGraphicsState->setProgram(mpStereoProgram);
++        mpRenderContext->setGraphicsVars(mpStereoVars);
++    }
++    mpGraphicsState->setFbo(mpVrFbo->getFbo());
++    mpRenderContext->pushGraphicsState(mpGraphicsState);
++
++    // Render
++    mpSceneRenderer->renderScene(mpRenderContext.get());
++
++    // Restore the state
++    mpRenderContext->popGraphicsState();
++
++    // Submit the views and display them
++    mpVrFbo->submitToHmd(mpRenderContext.get());
++    blitTexture(mpVrFbo->getEyeResourceView(VRDisplay::Eye::Left), 0);
++    blitTexture(mpVrFbo->getEyeResourceView(VRDisplay::Eye::Right), mpDefaultFBO->getWidth() / 2);
++}
++
++void StereoRendering::submitToScreen()
++{
++    mpRenderContext->pushGraphicsState(mpGraphicsState);
++
++    mpGraphicsState->setDepthStencilState(mpDepthStencilState);
++    mpGraphicsState->setProgram(mpMonoSPSProgram);
++    mpGraphicsState->setFbo(mpDefaultFBO);
++    mpRenderContext->setGraphicsState(mpGraphicsState);
++    mpRenderContext->setGraphicsVars(mpMonoSPSVars);
++    mpSceneRenderer->renderScene(mpRenderContext.get());
++
++    mpGraphicsState->setDepthStencilState(mSkyBox.pDS);
++    mSkyBox.pEffect->render(mpRenderContext.get(), mpSceneRenderer->getScene()->getActiveCamera().get());
++    mpGraphicsState->setDepthStencilState(nullptr);
++
++    if (mpDebugFoveation) {
++        mpColorVars->setTexture("gTexture", mpDefaultFBO->getColorTexture(0));
++        mpColorVars->setSampler("gSampler", mpTriLinearSampler);
++
++        mpGraphicsState->setFbo(mpTempFB);
++        mpRenderContext->setGraphicsState(mpGraphicsState);
++        mpRenderContext->setGraphicsVars(mpColorVars);
++        mpColorSplit->execute(mpRenderContext.get());
++
++        mpTempFB->getColorTexture(0)->generateMips();
++
++        mpBlitVars->setTexture("gTexture", mpTempFB->getColorTexture(0));
++        mpBlitVars->setSampler("gSampler", mpBilinearSampler);
++
++        mpGraphicsState->setFbo(mpDefaultFBO);
++        mpRenderContext->setGraphicsState(mpGraphicsState);
++        mpRenderContext->setGraphicsVars(mpBlitVars);
++        mpBlit->execute(mpRenderContext.get());
++    }
++    //mpRenderContext->blit(mpTempFB2->getColorTexture(0)->getSRV(), mpDefaultFBO->getRenderTargetView(0));
++}
++
++void StereoRendering::setRenderMode()
++{
++    if(mpScene)
++    {
++        std::string lights;
++        getSceneLightString(mpScene.get(), lights);
++        mpMonoSPSProgram->addDefine("_LIGHT_SOURCES", lights);
++        mpStereoProgram->addDefine("_LIGHT_SOURCES", lights);
++        mpMonoSPSProgram->removeDefine("_SINGLE_PASS_STEREO");
++
++        mpGraphicsState->toggleSinglePassStereo(false);
++        switch(mRenderMode)
++        {
++        case RenderMode::SinglePassStereo:
++            mpMonoSPSProgram->addDefine("_SINGLE_PASS_STEREO");
++            mpGraphicsState->toggleSinglePassStereo(true);
++            mpSceneRenderer->setCameraControllerType(SceneRenderer::CameraControllerType::Hmd);
++            break;
++        case RenderMode::Stereo:
++            mpSceneRenderer->setCameraControllerType(SceneRenderer::CameraControllerType::Hmd);
++            break;
++        case RenderMode::Mono:
++            mpSceneRenderer->setCameraControllerType(SceneRenderer::CameraControllerType::FirstPerson);
++            break;
++        }
++    }
++}
++
++void StereoRendering::loadScene()
++{
++    std::string filename;
++    if(openFileDialog("Scene files\0*.fscene\0\0", filename))
++    {
++        loadScene(filename);
++    }
++}
++
++void StereoRendering::loadScene(const std::string& filename)
++{
++    mpScene = Scene::loadFromFile(filename);
++    mpEditor = SceneEditor::create(mpScene);
++
++    mpSceneRenderer = SceneRenderer::create(mpScene);
++    mpMonoSPSProgram = GraphicsProgram::createFromFile("", appendShaderExtension("StereoRendering.ps"));
++    mpStereoProgram = GraphicsProgram::createFromFile(appendShaderExtension("StereoRendering.vs"), appendShaderExtension("StereoRendering.ps"), appendShaderExtension("StereoRendering.gs"), "", "");
++
++    mpColorSplit = FullScreenPass::create(appendShaderExtension("ColorSplit.ps"));
++    mpColorVars = GraphicsVars::create(mpColorSplit->getProgram()->getActiveVersion()->getReflector());
++
++    mpBlit = FullScreenPass::create(appendShaderExtension("FoveatedBlit.ps"));
++    mpBlitVars = GraphicsVars::create(mpBlit->getProgram()->getActiveVersion()->getReflector());
++
++    RasterizerState::Desc rdesc;
++    rdesc.setCullMode(RasterizerState::CullMode::None);
++    mpFSRasterizerState = RasterizerState::create(rdesc);
++
++    DepthStencilState::Desc desc;
++    mpDepthStencilState = DepthStencilState::create(desc);
++
++    Sampler::Desc samplerDesc;
++    samplerDesc.setFilterMode(Sampler::Filter::Linear, Sampler::Filter::Linear, Sampler::Filter::Linear);
++    mSkyBox.pSampler = Sampler::create(samplerDesc);
++    mSkyBox.pEffect = SkyBox::createFromTexture("Bistro/BlueSky.exr", true, mSkyBox.pSampler);
++    DepthStencilState::Desc dsDesc;
++    dsDesc.setDepthFunc(DepthStencilState::Func::Always);
++    mSkyBox.pDS = DepthStencilState::create(dsDesc);
++
++    setRenderMode();
++    mpMonoSPSVars = GraphicsVars::create(mpMonoSPSProgram->getActiveVersion()->getReflector());
++    mpStereoVars = GraphicsVars::create(mpStereoProgram->getActiveVersion()->getReflector());
++
++    for (uint32_t m = 0; m < mpScene->getModelCount(); m++)
++    {
++        mpScene->getModel(m)->bindSamplerToMaterials(mpBilinearSampler2);
++    }
++}
++
++void StereoRendering::onLoad()
++{
++    mSPSSupported = gpDevice->isExtensionSupported("VK_NVX_multiview_per_view_attributes");
++
++    initVR();
++
++    mpGraphicsState = GraphicsState::create();
++    setRenderMode();
++
++    Fbo::Desc fboDesc;
++    fboDesc.setColorTarget(0, Falcor::ResourceFormat::RGBA32Float);
++    fboDesc.setDepthStencilTarget(ResourceFormat::D32Float);
++    mpTempFB = FboHelper::create2D(mpDefaultFBO->getWidth(), mpDefaultFBO->getHeight(), fboDesc, 1, Texture::kMaxPossible);
++    mpTempFB2 = FboHelper::create2D(mpDefaultFBO->getWidth(), mpDefaultFBO->getHeight(), fboDesc, 1, Texture::kMaxPossible);
++
++    Sampler::Desc samplerDesc;
++    samplerDesc.setFilterMode(Sampler::Filter::Point, Sampler::Filter::Point, Sampler::Filter::Point);
++    mpTriLinearSampler = Sampler::create(samplerDesc);
++
++    samplerDesc.setFilterMode(Sampler::Filter::Linear, Sampler::Filter::Linear, Sampler::Filter::Linear);
++    samplerDesc.setAddressingMode(Sampler::AddressMode::Clamp, Sampler::AddressMode::Clamp, Sampler::AddressMode::Clamp);
++    mpBilinearSampler = Sampler::create(samplerDesc);
++    samplerDesc.setFilterMode(Sampler::Filter::Linear, Sampler::Filter::Linear, Sampler::Filter::Linear);
++    samplerDesc.setAddressingMode(Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap);
++    mpBilinearSampler2 = Sampler::create(samplerDesc);;
++
++    loadScene("Bistro/Bistro_Exterior.fscene");
++}
++
++void StereoRendering::blitTexture(Texture::SharedPtr pTexture, uint32_t xStart)
++{
++    if(mShowStereoViews)
++    {
++        uvec4 dstRect;
++        dstRect.x = xStart;
++        dstRect.y = 0;
++        dstRect.z = xStart + (mpDefaultFBO->getWidth() / 2);
++        dstRect.w = mpDefaultFBO->getHeight();
++        mpRenderContext->blit(pTexture->getSRV(0, 1, 0, 1), mpDefaultFBO->getRenderTargetView(0), uvec4(-1), dstRect);
++    }
++}
++
++void StereoRendering::onFrameRender()
++{
++    static uint32_t frameCount = 0u;
++
++    ConstantBuffer::SharedPtr pCB = mpBlitVars->getConstantBuffer("FoveatedCB");
++    pCB["gEyePos"] = glm::vec4(mpGazePosition, mpDebugViz ? 1.0 : 0.0, mpColorSpace);
++
++    ConstantBuffer::SharedPtr pCCB = mpColorVars->getConstantBuffer("FoveatedCB");
++    pCCB["gEyePos"] = glm::vec4(mpGazePosition, mpDebugViz ? 1.0 : 0.0, mpColorSpace);
++
++    mpRenderContext->clearFbo(mpDefaultFBO.get(), kClearColor, 1.0f, 0, FboAttachmentType::All);
++    mpRenderContext->clearFbo(mpTempFB.get(), kClearColor, 1.0f, 0, FboAttachmentType::All);
++
++    if(mpSceneRenderer)
++    {
++        mpEditor->update(mCurrentTime);
++        mpSceneRenderer->update(mCurrentTime);
++
++        switch(mRenderMode)
++        {
++        case RenderMode::Mono:
++            submitToScreen();
++            break;
++        case RenderMode::SinglePassStereo:
++            submitStereo(true);
++            break;
++        case RenderMode::Stereo:
++            submitStereo(false);
++            break;
++        default:
++            should_not_get_here();
++        }
++    }
++
++    std::string message = getFpsMsg();
++    message += "\nFrame counter: " + std::to_string(frameCount);
++
++    renderText(message, glm::vec2(10, 10));
++
++    frameCount++;
++}
++
++bool StereoRendering::onKeyEvent(const KeyboardEvent& keyEvent)
++{
++    if (keyEvent.key == KeyboardEvent::Key::LeftAlt && keyEvent.type == KeyboardEvent::Type::KeyReleased) {
++        mpDebugFoveation = !mpDebugFoveation;
++    }
++    if (keyEvent.key == KeyboardEvent::Key::R && keyEvent.type == KeyboardEvent::Type::KeyReleased) {
++        mpDebugViz = !mpDebugViz;
++    }
++    if(keyEvent.key == KeyboardEvent::Key::Space && keyEvent.type == KeyboardEvent::Type::KeyPressed)
++    {
++        if (VRSystem::instance())
++        {
++            // Cycle through modes
++            uint32_t nextMode = (uint32_t)mRenderMode + 1;
++            mRenderMode = (RenderMode)(nextMode % (mSPSSupported ? 3 : 2));
++            setRenderMode();
++            return true;
++        }
++    }
++    return mpSceneRenderer ? mpSceneRenderer->onKeyEvent(keyEvent) : false;
++}
++
++bool StereoRendering::onMouseEvent(const MouseEvent& mouseEvent)
++{
++    switch (mouseEvent.type) {
++    case MouseEvent::Type::RightButtonDown:
++        mpMouseMovingGaze = true;
++        break;
++    case MouseEvent::Type::RightButtonUp:
++        mpMouseMovingGaze = false;
++        break;
++    case MouseEvent::Type::Move:
++        if (mpMouseMovingGaze) {
++            mpGazePosition = mouseEvent.pos;
++        }
++        break;
++    default:
++        break;
++    }
++    return mpSceneRenderer ? mpSceneRenderer->onMouseEvent(mouseEvent) : false;
++}
++
++void StereoRendering::onDataReload()
++{
++
++}
++
++void StereoRendering::onResizeSwapChain()
++{
++    initVR();
++}
++
++#ifdef _WIN32
++int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd)
++#else
++int main(int argc, char** argv)
++#endif
++{
++    StereoRendering sample;
++    SampleConfig config;
++    config.windowDesc.title = "Stereo Rendering";
++    config.windowDesc.height = 1024;
++    config.windowDesc.width = 1600;
++    config.windowDesc.resizableWindow = true;
++    config.deviceDesc.enableVR = true;
++#ifdef FALCOR_VK
++    config.deviceDesc.enableDebugLayer = false; // OpenVR requires an extension that the debug layer doesn't recognize. It causes the application to crash
++#endif
++
++#ifdef _WIN32
++    sample.run(config);
++#else
++    sample.run(config, (uint32_t)argc, argv);
++#endif
++    return 0;
++}
+diff --git a/Samples/Core/FovaChrom/FoveatedChroma.h b/Samples/Core/FovaChrom/FoveatedChroma.h
+new file mode 100644
+index 0000000..4e02535
+--- /dev/null
++++ b/Samples/Core/FovaChrom/FoveatedChroma.h
+@@ -0,0 +1,112 @@
++/***************************************************************************
++# Copyright (c) 2015, NVIDIA CORPORATION. All rights reserved.
++#
++# Redistribution and use in source and binary forms, with or without
++# modification, are permitted provided that the following conditions
++# are met:
++#  * Redistributions of source code must retain the above copyright
++#    notice, this list of conditions and the following disclaimer.
++#  * Redistributions in binary form must reproduce the above copyright
++#    notice, this list of conditions and the following disclaimer in the
++#    documentation and/or other materials provided with the distribution.
++#  * Neither the name of NVIDIA CORPORATION nor the names of its
++#    contributors may be used to endorse or promote products derived
++#    from this software without specific prior written permission.
++#
++# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
++# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++# PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
++# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
++# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
++# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
++# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
++# OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
++# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++***************************************************************************/
++#pragma once
++#include "Falcor.h"
++
++using namespace Falcor;
++
++class StereoRendering : public Sample
++{
++public:
++    void onLoad() override;
++    void onFrameRender() override;
++    void onResizeSwapChain() override;
++    bool onKeyEvent(const KeyboardEvent& keyEvent) override;
++    bool onMouseEvent(const MouseEvent& mouseEvent) override;
++    void onDataReload() override;
++    void onGuiRender() override;
++
++private:
++
++    Scene::SharedPtr mpScene;
++    SceneRenderer::SharedPtr mpSceneRenderer;
++    SceneEditor::UniquePtr mpEditor = nullptr;
++
++    DepthStencilState::SharedPtr mpDepthStencilState = nullptr;
++    GraphicsProgram::SharedPtr mpMonoSPSProgram = nullptr;
++    GraphicsVars::SharedPtr mpMonoSPSVars = nullptr;
++
++    GraphicsProgram::SharedPtr mpStereoProgram = nullptr;
++    GraphicsVars::SharedPtr mpStereoVars = nullptr;
++
++    GraphicsState::SharedPtr mpGraphicsState = nullptr;
++    Sampler::SharedPtr mpTriLinearSampler;
++    Sampler::SharedPtr mpBilinearSampler;
++    Sampler::SharedPtr mpBilinearSampler2;
++    RasterizerState::SharedPtr mpFSRasterizerState;
++
++    Fbo::SharedPtr mpTempFB;
++    Fbo::SharedPtr mpTempFB2;
++    ConstantBuffer::SharedPtr mpFoveatedBuffer;
++    FullScreenPass::UniquePtr mpColorSplit;
++    GraphicsVars::SharedPtr mpColorVars;
++
++    bool mpDebugFoveation = true;
++    bool mpDebugViz = false;
++    bool mpMouseMovingGaze = false;
++    glm::vec2 mpGazePosition;
++
++    FullScreenPass::UniquePtr mpBlit;
++    GraphicsVars::SharedPtr mpBlitVars;
++
++    void loadScene();
++    void loadScene(const std::string & filename);
++
++    enum class RenderMode
++    {
++        Mono,
++        Stereo,
++        SinglePassStereo
++    };
++
++    struct
++    {
++        SkyBox::UniquePtr pEffect;
++        DepthStencilState::SharedPtr pDS;
++        Sampler::SharedPtr pSampler;
++    } mSkyBox;
++
++    enum class ColorSpace {
++        YCoCg = 0,
++        YCoCg24,
++    };
++
++    bool mSPSSupported = false;
++    RenderMode mRenderMode = RenderMode::Mono;
++    Gui::DropdownList mSubmitModeList;
++    Gui::DropdownList mColorSpaceList;
++    ColorSpace mpColorSpace = ColorSpace::YCoCg;
++
++    void submitToScreen();
++    void initVR();
++    void blitTexture(Texture::SharedPtr pTexture, uint32_t xStart);
++    VrFbo::UniquePtr mpVrFbo;
++    bool mShowStereoViews = true;
++    void submitStereo(bool singlePassStereo);
++    void setRenderMode();
++};
+diff --git a/Samples/Core/FovaChrom/FoveatedChroma.vcxproj b/Samples/Core/FovaChrom/FoveatedChroma.vcxproj
+new file mode 100644
+index 0000000..a99fb80
+--- /dev/null
++++ b/Samples/Core/FovaChrom/FoveatedChroma.vcxproj
+@@ -0,0 +1,117 @@
++﻿<?xml version="1.0" encoding="utf-8"?>
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++  <ItemGroup Label="ProjectConfigurations">
++    <ProjectConfiguration Include="Debug|x64">
++      <Configuration>Debug</Configuration>
++      <Platform>x64</Platform>
++    </ProjectConfiguration>
++    <ProjectConfiguration Include="Release|x64">
++      <Configuration>Release</Configuration>
++      <Platform>x64</Platform>
++    </ProjectConfiguration>
++  </ItemGroup>
++  <ItemGroup>
++    <ClCompile Include="FoveatedChroma.cpp" />
++  </ItemGroup>
++  <ItemGroup>
++    <ClInclude Include="FoveatedChroma.h" />
++  </ItemGroup>
++  <ItemGroup>
++    <ProjectReference Include="..\..\..\Framework\Source\Falcor.vcxproj">
++      <Project>{3b602f0e-3834-4f73-b97d-7dfc91597a98}</Project>
++    </ProjectReference>
++  </ItemGroup>
++  <ItemGroup>
++    <None Include="Data\Conversions.hlsli" />
++    <None Include="Data\StereoRendering.ps.hlsl" />
++  </ItemGroup>
++  <ItemGroup>
++    <None Include="Data\StereoRendering.gs.hlsl">
++      <FileType>Document</FileType>
++    </None>
++  </ItemGroup>
++  <ItemGroup>
++    <None Include="Data\StereoRendering.vs.hlsl">
++      <FileType>Document</FileType>
++    </None>
++  </ItemGroup>
++  <ItemGroup>
++    <None Include="Data\ColorSplit.ps.hlsl">
++      <FileType>Document</FileType>
++    </None>
++  </ItemGroup>
++  <ItemGroup>
++    <None Include="Data\FoveatedBlit.ps.hlsl">
++      <FileType>Document</FileType>
++    </None>
++  </ItemGroup>
++  <PropertyGroup Label="Globals">
++    <ProjectGuid>{C565E4F8-B85B-4F34-8FA5-78C7ABDC07F2}</ProjectGuid>
++    <Keyword>Win32Proj</Keyword>
++    <RootNamespace>StereoRendering</RootNamespace>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
++  </PropertyGroup>
++  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
++  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
++    <ConfigurationType>Application</ConfigurationType>
++    <UseDebugLibraries>true</UseDebugLibraries>
++    <PlatformToolset>v141</PlatformToolset>
++    <CharacterSet>Unicode</CharacterSet>
++  </PropertyGroup>
++  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
++    <ConfigurationType>Application</ConfigurationType>
++    <UseDebugLibraries>false</UseDebugLibraries>
++    <PlatformToolset>v141</PlatformToolset>
++    <WholeProgramOptimization>true</WholeProgramOptimization>
++    <CharacterSet>Unicode</CharacterSet>
++  </PropertyGroup>
++  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
++  <ImportGroup Label="ExtensionSettings">
++  </ImportGroup>
++  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
++    <Import Project="..\..\..\Framework\Source\Falcor.props" />
++  </ImportGroup>
++  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
++    <Import Project="..\..\..\Framework\Source\Falcor.props" />
++  </ImportGroup>
++  <PropertyGroup Label="UserMacros" />
++  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
++    <LinkIncremental>true</LinkIncremental>
++  </PropertyGroup>
++  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
++    <LinkIncremental>false</LinkIncremental>
++  </PropertyGroup>
++  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
++    <ClCompile>
++      <PrecompiledHeader>
++      </PrecompiledHeader>
++      <WarningLevel>Level3</WarningLevel>
++      <Optimization>Disabled</Optimization>
++      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++    </ClCompile>
++    <Link>
++      <SubSystem>Windows</SubSystem>
++      <GenerateDebugInformation>true</GenerateDebugInformation>
++    </Link>
++  </ItemDefinitionGroup>
++  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
++    <ClCompile>
++      <WarningLevel>Level3</WarningLevel>
++      <PrecompiledHeader>
++      </PrecompiledHeader>
++      <Optimization>MaxSpeed</Optimization>
++      <FunctionLevelLinking>true</FunctionLevelLinking>
++      <IntrinsicFunctions>true</IntrinsicFunctions>
++      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++    </ClCompile>
++    <Link>
++      <SubSystem>Windows</SubSystem>
++      <GenerateDebugInformation>true</GenerateDebugInformation>
++      <EnableCOMDATFolding>true</EnableCOMDATFolding>
++      <OptimizeReferences>true</OptimizeReferences>
++    </Link>
++  </ItemDefinitionGroup>
++  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
++  <ImportGroup Label="ExtensionTargets">
++  </ImportGroup>
++</Project>
+\ No newline at end of file
+diff --git a/Samples/Core/LearningWithEmbeddedPython/LearningWithEmbeddedPython.vcxproj b/Samples/Core/LearningWithEmbeddedPython/LearningWithEmbeddedPython.vcxproj
+index 80b5564..83a0d36 100644
+--- a/Samples/Core/LearningWithEmbeddedPython/LearningWithEmbeddedPython.vcxproj
++++ b/Samples/Core/LearningWithEmbeddedPython/LearningWithEmbeddedPython.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|x64">
+       <Configuration>Debug</Configuration>
+@@ -14,19 +14,19 @@
+     <ProjectGuid>{B7D37434-A294-4E67-8420-AD09C54C10EF}</ProjectGuid>
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>LearningWithEmbeddedPython</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+diff --git a/Samples/Core/MultiPassPostProcess/MultiPassPostProcess.vcxproj b/Samples/Core/MultiPassPostProcess/MultiPassPostProcess.vcxproj
+index 501f635..e398d23 100644
+--- a/Samples/Core/MultiPassPostProcess/MultiPassPostProcess.vcxproj
++++ b/Samples/Core/MultiPassPostProcess/MultiPassPostProcess.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|x64">
+       <Configuration>Debug</Configuration>
+@@ -31,19 +31,19 @@
+     <ProjectGuid>{282AAB9B-2150-447C-9C27-62C38C23761E}</ProjectGuid>
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>MultiPassPostProcess</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+diff --git a/Samples/Core/ProjectTemplate/Data/SceneEditorSample.ps.slang b/Samples/Core/ProjectTemplate/Data/SceneEditorSample.ps.slang
+new file mode 100644
+index 0000000..af19a52
+--- /dev/null
++++ b/Samples/Core/ProjectTemplate/Data/SceneEditorSample.ps.slang
+@@ -0,0 +1,51 @@
++/***************************************************************************
++# Copyright (c) 2015, NVIDIA CORPORATION. All rights reserved.
++#
++# Redistribution and use in source and binary forms, with or without
++# modification, are permitted provided that the following conditions
++# are met:
++#  * Redistributions of source code must retain the above copyright
++#    notice, this list of conditions and the following disclaimer.
++#  * Redistributions in binary form must reproduce the above copyright
++#    notice, this list of conditions and the following disclaimer in the
++#    documentation and/or other materials provided with the distribution.
++#  * Neither the name of NVIDIA CORPORATION nor the names of its
++#    contributors may be used to endorse or promote products derived
++#    from this software without specific prior written permission.
++#
++# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
++# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++# PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
++# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
++# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
++# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
++# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
++# OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
++# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++***************************************************************************/
++__import ShaderCommon;
++__import Shading;
++__import DefaultVS;
++
++float4 main(VS_OUT vOut) : SV_TARGET
++{
++    ShadingAttribs shAttr;
++    prepareShadingAttribs(gMaterial, vOut.posW, gCam.position, vOut.normalW, vOut.bitangentW, vOut.texC, shAttr);
++
++    ShadingOutput result;
++    result.finalValue = 0;
++    float4 finalColor = 0;
++
++    for (uint l = 0; l < gLightsCount; l++)
++    {
++        evalMaterial(shAttr, gLights[l], result, l == 0);
++    }
++
++    finalColor = float4(result.finalValue, 1.f);
++
++    // add ambient
++    finalColor.rgb += gAmbientLighting * getDiffuseColor(shAttr).rgb;
++    return finalColor;
++}
+diff --git a/Samples/Core/ProjectTemplate/Data/Shadows.ps.hlsl b/Samples/Core/ProjectTemplate/Data/Shadows.ps.hlsl
+new file mode 100644
+index 0000000..b820e03
+--- /dev/null
++++ b/Samples/Core/ProjectTemplate/Data/Shadows.ps.hlsl
+@@ -0,0 +1,73 @@
++/***************************************************************************
++# Copyright (c) 2017, NVIDIA CORPORATION. All rights reserved.
++#
++# Redistribution and use in source and binary forms, with or without
++# modification, are permitted provided that the following conditions
++# are met:
++#  * Redistributions of source code must retain the above copyright
++#    notice, this list of conditions and the following disclaimer.
++#  * Redistributions in binary form must reproduce the above copyright
++#    notice, this list of conditions and the following disclaimer in the
++#    documentation and/or other materials provided with the distribution.
++#  * Neither the name of NVIDIA CORPORATION nor the names of its
++#    contributors may be used to endorse or promote products derived
++#    from this software without specific prior written permission.
++#
++# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
++# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++# PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
++# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
++# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
++# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
++# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
++# OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
++# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++***************************************************************************/
++__import DefaultVS;
++__import Shading;
++__import ShaderCommon;
++__import Effects.CascadedShadowMap;
++
++cbuffer PerFrameCB : register(b0)
++{
++	float3 gAmbient;
++    CsmData gCsmData[_LIGHT_COUNT];
++    bool visualizeCascades;
++    float4x4 camVpAtLastCsmUpdate;
++};
++
++struct ShadowsVSOut
++{
++    VS_OUT vsData;
++    float shadowsDepthC : DEPTH;
++};
++
++float4 main(ShadowsVSOut pIn) : SV_TARGET0
++{
++    ShadingAttribs shAttr;
++    prepareShadingAttribs(gMaterial, pIn.vsData.posW, gCam.position, pIn.vsData.normalW, pIn.vsData.bitangentW, pIn.vsData.texC, 0, shAttr);
++    ShadingOutput result;
++    float4 fragColor = float4(0,0,0,1);
++    
++    [unroll]
++    for(uint l = 0 ; l < _LIGHT_COUNT ; l++)
++    {
++        float shadowFactor = calcShadowFactor(gCsmData[l], pIn.shadowsDepthC, shAttr.P, pIn.vsData.posH.xy/pIn.vsData.posH.w);
++        evalMaterial(shAttr, gLights[l], result, l == 0);
++        fragColor.rgb += result.diffuseAlbedo * result.diffuseIllumination * shadowFactor;
++        fragColor.rgb += result.specularAlbedo * result.specularIllumination * (0.01f + shadowFactor * 0.99f);
++    }
++
++    fragColor.rgb += gAmbient * result.diffuseAlbedo * 0.1;
++    if(visualizeCascades)
++    {
++        //Ideally this would be light index so you can visualize the cascades of the 
++        //currently selected light. However, because csmData contains Textures, it doesn't
++        //like getting them with a non literal index.
++        fragColor.rgb *= getBlendedCascadeColor(gCsmData[_LIGHT_INDEX], pIn.shadowsDepthC);
++    }
++
++    return fragColor;
++}
+diff --git a/Samples/Core/ProjectTemplate/Data/Shadows.vs.hlsl b/Samples/Core/ProjectTemplate/Data/Shadows.vs.hlsl
+new file mode 100644
+index 0000000..a1c589b
+--- /dev/null
++++ b/Samples/Core/ProjectTemplate/Data/Shadows.vs.hlsl
+@@ -0,0 +1,54 @@
++/***************************************************************************
++# Copyright (c) 2015, NVIDIA CORPORATION. All rights reserved.
++#
++# Redistribution and use in source and binary forms, with or without
++# modification, are permitted provided that the following conditions
++# are met:
++#  * Redistributions of source code must retain the above copyright
++#    notice, this list of conditions and the following disclaimer.
++#  * Redistributions in binary form must reproduce the above copyright
++#    notice, this list of conditions and the following disclaimer in the
++#    documentation and/or other materials provided with the distribution.
++#  * Neither the name of NVIDIA CORPORATION nor the names of its
++#    contributors may be used to endorse or promote products derived
++#    from this software without specific prior written permission.
++#
++# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
++# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++# PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
++# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
++# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
++# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
++# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
++# OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
++# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++***************************************************************************/
++__import DefaultVS;
++__import ShaderCommon;
++__import Effects.CascadedShadowMap;
++
++cbuffer PerFrameCB : register(b0)
++{
++	float3 gAmbient;
++    CsmData gCsmData[_LIGHT_COUNT];
++    bool visualizeCascades;
++    float4x4 camVpAtLastCsmUpdate;
++};
++
++struct ShadowsVSOut
++{
++    VS_OUT vsData;
++    float shadowsDepthC : DEPTH;
++};
++
++ShadowsVSOut main(VS_IN vIn)
++{
++    VS_OUT defaultOut = defaultVS(vIn);
++    ShadowsVSOut output;
++    output.vsData = defaultOut;
++
++    output.shadowsDepthC = mul(float4(defaultOut.posW, 1), camVpAtLastCsmUpdate).z;
++    return output;
++}
+\ No newline at end of file
+diff --git a/Samples/Core/ProjectTemplate/Data/VisualizeMap.ps.hlsl b/Samples/Core/ProjectTemplate/Data/VisualizeMap.ps.hlsl
+new file mode 100644
+index 0000000..0246bd4
+--- /dev/null
++++ b/Samples/Core/ProjectTemplate/Data/VisualizeMap.ps.hlsl
+@@ -0,0 +1,53 @@
++/***************************************************************************
++# Copyright (c) 2015, NVIDIA CORPORATION. All rights reserved.
++#
++# Redistribution and use in source and binary forms, with or without
++# modification, are permitted provided that the following conditions
++# are met:
++#  * Redistributions of source code must retain the above copyright
++#    notice, this list of conditions and the following disclaimer.
++#  * Redistributions in binary form must reproduce the above copyright
++#    notice, this list of conditions and the following disclaimer in the
++#    documentation and/or other materials provided with the distribution.
++#  * Neither the name of NVIDIA CORPORATION nor the names of its
++#    contributors may be used to endorse or promote products derived
++#    from this software without specific prior written permission.
++#
++# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
++# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++# PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
++# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
++# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
++# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
++# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
++# OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
++# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++***************************************************************************/
++SamplerState gSampler : register(s0);
++
++cbuffer PerImageCB : register(b0)
++{
++#ifdef _USE_2D_ARRAY
++	Texture2DArray gTexture;
++    int cascade;
++#else
++    texture2D gTexture;
++#endif
++};
++
++float4 calcColor(float2 texC)
++{
++#ifdef _USE_2D_ARRAY
++	float d = gTexture.SampleLevel(gSampler, float3(texC, float(cascade)), 0).r;
++#else
++    float d = gTexture.SampleLevel(gSampler, texC, 0).r;
++#endif
++    return float4(d.xxx, 1);
++}
++
++float4 main(float2 texC  : TEXCOORD) : SV_TARGET0
++{
++	return calcColor(texC);
++}
+diff --git a/Samples/Core/ProjectTemplate/ProjectTemplate.vcxproj b/Samples/Core/ProjectTemplate/ProjectTemplate.vcxproj
+index a50cbc5..b3e7b81 100644
+--- a/Samples/Core/ProjectTemplate/ProjectTemplate.vcxproj
++++ b/Samples/Core/ProjectTemplate/ProjectTemplate.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|x64">
+       <Configuration>Debug</Configuration>
+@@ -25,19 +25,19 @@
+     <ProjectGuid>{605856E4-34D4-40DF-B859-EEA3A7D52A7B}</ProjectGuid>
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>ProjectTemplate</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+diff --git a/Samples/Core/ShaderBuffers/ShaderBuffers.vcxproj b/Samples/Core/ShaderBuffers/ShaderBuffers.vcxproj
+index f305f50..76694e1 100644
+--- a/Samples/Core/ShaderBuffers/ShaderBuffers.vcxproj
++++ b/Samples/Core/ShaderBuffers/ShaderBuffers.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|x64">
+       <Configuration>Debug</Configuration>
+@@ -37,19 +37,19 @@
+     <ProjectGuid>{E9189681-F552-4811-9B9C-C88E63D21363}</ProjectGuid>
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>ShaderBuffers</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+diff --git a/Samples/Core/ShaderToy/ShaderToy.vcxproj b/Samples/Core/ShaderToy/ShaderToy.vcxproj
+index ccf4eaf..6c4141d 100644
+--- a/Samples/Core/ShaderToy/ShaderToy.vcxproj
++++ b/Samples/Core/ShaderToy/ShaderToy.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|x64">
+       <Configuration>Debug</Configuration>
+@@ -31,19 +31,19 @@
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>ShaderToy</RootNamespace>
+     <ProjectName>ShaderToy</ProjectName>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+diff --git a/Samples/Core/SimpleDeferred/SimpleDeferred.vcxproj b/Samples/Core/SimpleDeferred/SimpleDeferred.vcxproj
+index 022217f..eec6a50 100644
+--- a/Samples/Core/SimpleDeferred/SimpleDeferred.vcxproj
++++ b/Samples/Core/SimpleDeferred/SimpleDeferred.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|x64">
+       <Configuration>Debug</Configuration>
+@@ -33,19 +33,19 @@
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>SimpleDeferred</RootNamespace>
+     <ProjectName>SimpleDeferred</ProjectName>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+diff --git a/Samples/Core/StereoRendering/StereoRendering.vcxproj b/Samples/Core/StereoRendering/StereoRendering.vcxproj
+index ac6a6b7..0eae712 100644
+--- a/Samples/Core/StereoRendering/StereoRendering.vcxproj
++++ b/Samples/Core/StereoRendering/StereoRendering.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|x64">
+       <Configuration>Debug</Configuration>
+@@ -41,19 +41,19 @@
+     <ProjectGuid>{7C6C43DE-EEF4-4165-BE92-ED753D3799EE}</ProjectGuid>
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>StereoRendering</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+diff --git a/Samples/Effects/AmbientOcclusion/AmbientOcclusion.vcxproj b/Samples/Effects/AmbientOcclusion/AmbientOcclusion.vcxproj
+index 6d11439..5b9433e 100644
+--- a/Samples/Effects/AmbientOcclusion/AmbientOcclusion.vcxproj
++++ b/Samples/Effects/AmbientOcclusion/AmbientOcclusion.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|x64">
+       <Configuration>Debug</Configuration>
+@@ -37,19 +37,19 @@
+     <ProjectGuid>{E6F10A52-9C29-47B0-8BAE-46C146EB7163}</ProjectGuid>
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>AmbientOcclusion</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+diff --git a/Samples/Effects/EnvMap/EnvMap.vcxproj b/Samples/Effects/EnvMap/EnvMap.vcxproj
+index eee20ff..8f6260c 100644
+--- a/Samples/Effects/EnvMap/EnvMap.vcxproj
++++ b/Samples/Effects/EnvMap/EnvMap.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|x64">
+       <Configuration>Debug</Configuration>
+@@ -25,19 +25,19 @@
+     <ProjectGuid>{0C3483E0-B6C1-41BC-B8F9-306F9BA5F287}</ProjectGuid>
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>EnvMap</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+diff --git a/Samples/Effects/HashedAlpha/HashedAlpha.vcxproj b/Samples/Effects/HashedAlpha/HashedAlpha.vcxproj
+index 20e6892..6f02a48 100644
+--- a/Samples/Effects/HashedAlpha/HashedAlpha.vcxproj
++++ b/Samples/Effects/HashedAlpha/HashedAlpha.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|x64">
+       <Configuration>Debug</Configuration>
+@@ -34,19 +34,19 @@
+     <ProjectGuid>{1EAB59EA-E69B-4ADD-B98B-3E3E8FC1D988}</ProjectGuid>
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>HashedAlpha</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+diff --git a/Samples/Effects/NormalMapFiltering/NormalMapFiltering.vcxproj b/Samples/Effects/NormalMapFiltering/NormalMapFiltering.vcxproj
+index 1af7045..b88bff2 100644
+--- a/Samples/Effects/NormalMapFiltering/NormalMapFiltering.vcxproj
++++ b/Samples/Effects/NormalMapFiltering/NormalMapFiltering.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|x64">
+       <Configuration>Debug</Configuration>
+@@ -32,19 +32,19 @@
+     <ProjectGuid>{28027295-6141-4E2C-A54B-E48E41E19E6F}</ProjectGuid>
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>NormalMapFiltering</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+diff --git a/Samples/Effects/Particles/Particles.vcxproj b/Samples/Effects/Particles/Particles.vcxproj
+index 67d82b7..d7fd2b4 100644
+--- a/Samples/Effects/Particles/Particles.vcxproj
++++ b/Samples/Effects/Particles/Particles.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|x64">
+       <Configuration>Debug</Configuration>
+@@ -25,19 +25,19 @@
+     <ProjectGuid>{4BD89013-BE22-47CC-BCEC-8A406C8061A0}</ProjectGuid>
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>Particles</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+diff --git a/Samples/Effects/PostProcess/PostProcess.vcxproj b/Samples/Effects/PostProcess/PostProcess.vcxproj
+index 5442d4a..e33eec5 100644
+--- a/Samples/Effects/PostProcess/PostProcess.vcxproj
++++ b/Samples/Effects/PostProcess/PostProcess.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|x64">
+       <Configuration>Debug</Configuration>
+@@ -14,19 +14,19 @@
+     <ProjectGuid>{0A6AC638-6567-49F9-B328-66BA201C74B6}</ProjectGuid>
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>PostProcess</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+diff --git a/Samples/Effects/Shadows/Shadows.vcxproj b/Samples/Effects/Shadows/Shadows.vcxproj
+index 47d5b09..0a196a2 100644
+--- a/Samples/Effects/Shadows/Shadows.vcxproj
++++ b/Samples/Effects/Shadows/Shadows.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|x64">
+       <Configuration>Debug</Configuration>
+@@ -14,19 +14,19 @@
+     <ProjectGuid>{613640EA-CBBD-4B9D-931C-00110D5C4007}</ProjectGuid>
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>Shadows</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+diff --git a/Samples/FeatureDemo/FeatureDemo.vcxproj b/Samples/FeatureDemo/FeatureDemo.vcxproj
+index 2035c3a..1cac0fe 100644
+--- a/Samples/FeatureDemo/FeatureDemo.vcxproj
++++ b/Samples/FeatureDemo/FeatureDemo.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|x64">
+       <Configuration>Debug</Configuration>
+@@ -46,19 +46,19 @@
+     <ProjectGuid>{ADDD1F96-AE44-40BA-9942-0F056F96FA4B}</ProjectGuid>
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>FeatureDemo</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+diff --git a/Samples/Utils/ModelViewer/ModelViewer.vcxproj b/Samples/Utils/ModelViewer/ModelViewer.vcxproj
+index c674df5..5a3bc07 100644
+--- a/Samples/Utils/ModelViewer/ModelViewer.vcxproj
++++ b/Samples/Utils/ModelViewer/ModelViewer.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|x64">
+       <Configuration>Debug</Configuration>
+@@ -34,19 +34,19 @@
+     <ProjectGuid>{7BFFD891-AAD6-4E5C-8ADC-611C2625DCD9}</ProjectGuid>
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>ModelViewer</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+diff --git a/Samples/Utils/SceneEditor/SceneEditor.vcxproj b/Samples/Utils/SceneEditor/SceneEditor.vcxproj
+index 5127652..7f2eba8 100644
+--- a/Samples/Utils/SceneEditor/SceneEditor.vcxproj
++++ b/Samples/Utils/SceneEditor/SceneEditor.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|x64">
+       <Configuration>Debug</Configuration>
+@@ -28,19 +28,19 @@
+     <ProjectGuid>{DE6A0005-923E-4007-B58C-3C35F690773F}</ProjectGuid>
+     <Keyword>Win32Proj</Keyword>
+     <RootNamespace>SceneEditor</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
++    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v140</PlatformToolset>
++    <PlatformToolset>v141</PlatformToolset>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>

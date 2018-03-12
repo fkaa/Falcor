@@ -59,7 +59,25 @@ namespace Falcor
 
         // Create the FBO
         VrFbo::UniquePtr pVrFbo = std::make_unique<VrFbo>();
-        pVrFbo->mpFbo = FboHelper::create2D(width, height, desc, 2);
+
+        Fbo::SharedPtr pFbo = Fbo::create();
+        Fbo::SharedPtr pFboDouble = Fbo::create();
+
+        auto samples = 1;
+
+        Texture::BindFlags flags = FboHelper::getBindFlags(false, desc.isColorTargetUav(0));
+        Texture::SharedPtr pTex = FboHelper::createTexture2D(width, height, desc.getColorTargetFormat(0), samples, 2, 1, flags);
+        pFbo->attachColorTarget(pTex, 0, 0, 0, Fbo::kAttachEntireMipLevel);
+        pFboDouble->attachColorTarget(pTex, 0, 0, 0, 1);
+        pFboDouble->attachColorTarget(pTex, 1, 0, 1, 1);
+
+        Texture::BindFlags dflags = FboHelper::getBindFlags(true, desc.isDepthStencilUav());
+        Texture::SharedPtr pDepth = FboHelper::createTexture2D(width, height, desc.getDepthStencilFormat(), samples, 2, 1, dflags);
+        pFbo->attachDepthStencilTarget(pDepth, 0, 0, Fbo::kAttachEntireMipLevel);
+
+
+        pVrFbo->mpFbo = pFbo;
+        pVrFbo->mpFboDouble = pFboDouble;
 
         // create the textures
         // in the future we should use SRVs directly
@@ -69,6 +87,18 @@ namespace Falcor
         pVrFbo->mpRightView = Texture::create2D(width, height, desc.getColorTargetFormat(0),1,1);
 
         return pVrFbo;
+    }
+    
+    void VrFbo::unwrap(RenderContext* pRenderCtx) const
+    {
+        uint32_t ltSrcSubresourceIdx = mpFbo->getColorTexture(0)->getSubresourceIndex(0, 0);
+        uint32_t rtSrcSubresourceIdx = mpFbo->getColorTexture(0)->getSubresourceIndex(1, 0);
+
+        uint32_t ltDstSubresourceIdx = mpLeftView->getSubresourceIndex(0, 0);
+        uint32_t rtDstSubresourceIdx = mpRightView->getSubresourceIndex(0, 0);
+
+        pRenderCtx->copySubresource(mpLeftView.get(), ltDstSubresourceIdx, mpFbo->getColorTexture(0).get(), ltSrcSubresourceIdx);
+        pRenderCtx->copySubresource(mpRightView.get(), rtDstSubresourceIdx, mpFbo->getColorTexture(0).get(), rtSrcSubresourceIdx);
     }
 
     void VrFbo::submitToHmd(RenderContext* pRenderCtx) const

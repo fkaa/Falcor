@@ -28,6 +28,9 @@
 #pragma once
 #include "Falcor.h"
 
+#include "FoveTypes.h"
+#include "IFVRHeadset.h"
+
 using namespace Falcor;
 
 class StereoRendering : public Sample
@@ -61,7 +64,8 @@ private:
     RasterizerState::SharedPtr mpFSRasterizerState;
 
     Fbo::SharedPtr mpTempFB;
-    Fbo::SharedPtr mpTempFB2;
+    Fbo::SharedPtr mpTempVrFBLeft;
+    Fbo::SharedPtr mpTempVrFBRight;
     ConstantBuffer::SharedPtr mpFoveatedBuffer;
     FullScreenPass::UniquePtr mpColorSplit;
     GraphicsVars::SharedPtr mpColorVars;
@@ -73,6 +77,11 @@ private:
 
     FullScreenPass::UniquePtr mpBlit;
     GraphicsVars::SharedPtr mpBlitVars;
+    FullScreenPass::UniquePtr mpBlitVrLeft;
+    GraphicsVars::SharedPtr mpBlitVrLeftVars;
+    FullScreenPass::UniquePtr mpBlitVrRight;
+    GraphicsVars::SharedPtr mpBlitVrRightVars;
+
 
     void loadScene();
     void loadScene(const std::string & filename);

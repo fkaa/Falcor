@@ -29,6 +29,7 @@
 
 static const glm::vec4 kClearColor(0.28f, 0.52f, 0.90f, 1);
 
+#pragma comment(lib, "FoveClient.lib")
 
 void StereoRendering::onGuiRender()
 {
@@ -80,6 +81,8 @@ void StereoRendering::initVR()
         Fbo::Desc vrFboDesc;
 
         vrFboDesc.setColorTarget(0, mpDefaultFBO->getColorTexture(0)->getFormat());
+        // TODO: maybe?
+        //vrFboDesc.setColorTarget(1, mpDefaultFBO->getColorTexture(0)->getFormat());
         vrFboDesc.setDepthStencilTarget(mpDefaultFBO->getDepthStencilTexture()->getFormat());
 
         mpVrFbo = VrFbo::create(vrFboDesc);
@@ -134,24 +137,34 @@ void StereoRendering::submitStereo(bool singlePassStereo)
     //mSkyBox.pEffect->render(mpRenderContext.get(), mpSceneRenderer->getScene()->getActiveCamera().get());
     mpGraphicsState->setDepthStencilState(nullptr);
 
+    VRDisplay::Eye eyes[] = { VRDisplay::Eye::Left, VRDisplay::Eye::Right };
+    Fbo::SharedPtr fbos[] = { mpTempVrFBLeft, mpTempVrFBRight };
     if (mpDebugFoveation) {
-        mpColorVars->setTexture("gTexture", mpVrFbo->getFbo()->getColorTexture(0));
-        mpColorVars->setSampler("gSampler", mpTriLinearSampler);
+        for (int i = 0; i < 2; ++i) {
+            auto eye = eyes[i];
+            auto fbo = fbos[i];
 
-        mpGraphicsState->setFbo(mpTempFB);
+            mpColorVars->setTexture("gTexture", mpVrFbo->getEyeResourceView(eye));
+            mpColorVars->setSampler("gSampler", mpTriLinearSampler);
+
+            mpGraphicsState->setFbo(fbo);
+            mpRenderContext->setGraphicsState(mpGraphicsState);
+            mpRenderContext->setGraphicsVars(mpColorVars);
+            mpColorSplit->execute(mpRenderContext.get());
+
+            fbo->getColorTexture(0)->generateMips();
+        }
+
+        mpVrFbo->unwrap(mpRenderContext.get());
+
+        mpBlitVrLeftVars->setTexture("gTextureLeft", mpTempVrFBLeft->getColorTexture(0));
+        mpBlitVrLeftVars->setTexture("gTextureRight", mpTempVrFBLeft->getColorTexture(0));
+        mpBlitVrLeftVars->setSampler("gSampler", mpBilinearSampler);
+
+        mpGraphicsState->setFbo(mpVrFbo->getFboDouble());
         mpRenderContext->setGraphicsState(mpGraphicsState);
-        mpRenderContext->setGraphicsVars(mpColorVars);
-        mpColorSplit->execute(mpRenderContext.get());
-
-        mpTempFB->getColorTexture(0)->generateMips();
-
-        mpBlitVars->setTexture("gTexture", mpTempFB->getColorTexture(0));
-        mpBlitVars->setSampler("gSampler", mpBilinearSampler);
-
-        mpGraphicsState->setFbo(mpVrFbo->getFbo());
-        mpRenderContext->setGraphicsState(mpGraphicsState);
-        mpRenderContext->setGraphicsVars(mpBlitVars);
-        mpBlit->execute(mpRenderContext.get());
+        mpRenderContext->setGraphicsVars(mpBlitVrLeftVars);
+        mpBlitVrLeft->execute(mpRenderContext.get());
     }
 
     // Restore the state
@@ -251,6 +264,13 @@ void StereoRendering::loadScene(const std::string& filename)
 
     mpBlit = FullScreenPass::create(appendShaderExtension("FoveatedBlit.ps"));
     mpBlitVars = GraphicsVars::create(mpBlit->getProgram()->getActiveVersion()->getReflector());
+    Program::DefineList defines;
+    defines.add("EYE_SLICE", "0");
+    mpBlitVrLeft = FullScreenPass::create(appendShaderExtension("FoveatedBlitStereo.ps"), defines);
+    mpBlitVrLeftVars = GraphicsVars::create(mpBlitVrLeft->getProgram()->getActiveVersion()->getReflector());
+    defines.add("EYE_SLICE", "1");
+    mpBlitVrRight = FullScreenPass::create(appendShaderExtension("FoveatedBlitStereo.ps"), defines);
+    mpBlitVrRightVars = GraphicsVars::create(mpBlitVrRight->getProgram()->getActiveVersion()->getReflector());
 
     RasterizerState::Desc rdesc;
     rdesc.setCullMode(RasterizerState::CullMode::None);
@@ -282,14 +302,18 @@ void StereoRendering::onLoad()
     mSPSSupported = gpDevice->isExtensionSupported("VK_NVX_multiview_per_view_attributes");
 
     initVR();
-    
+
     mpGraphicsState = GraphicsState::create();
     setRenderMode();
 
     Fbo::Desc fboDesc;
     fboDesc.setColorTarget(0, Falcor::ResourceFormat::RGBA32Float);
     fboDesc.setDepthStencilTarget(ResourceFormat::D32Float);
-    mpTempFB = FboHelper::create2D(mpVrFbo->getFbo()->getWidth(), mpVrFbo->getFbo()->getHeight(), fboDesc, 1, Texture::kMaxPossible);
+    if (mpVrFbo) {
+        mpTempVrFBLeft = FboHelper::create2D(mpVrFbo->getFbo()->getWidth(), mpVrFbo->getFbo()->getHeight(), fboDesc, 1, Texture::kMaxPossible);
+        mpTempVrFBRight = FboHelper::create2D(mpVrFbo->getFbo()->getWidth(), mpVrFbo->getFbo()->getHeight(), fboDesc, 1, Texture::kMaxPossible);
+    }
+    mpTempFB = FboHelper::create2D(mpDefaultFBO->getWidth(), mpDefaultFBO->getHeight(), fboDesc, 1, Texture::kMaxPossible);
 
     Sampler::Desc samplerDesc;
     samplerDesc.setFilterMode(Sampler::Filter::Point, Sampler::Filter::Point, Sampler::Filter::Point);

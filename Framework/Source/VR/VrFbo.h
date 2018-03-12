@@ -52,6 +52,7 @@ namespace Falcor
         */
         static UniquePtr create(const Fbo::Desc& desc, uint32_t width = 0, uint32_t height = 0);
 
+        void unwrap(RenderContext* pRenderCtx) const;
         /** Submit the color target into the HMD
         */
         void submitToHmd(RenderContext* pRenderCtx) const;
@@ -59,6 +60,7 @@ namespace Falcor
         /** Get the FBO
         */
         Fbo::SharedPtr getFbo() const { return mpFbo; }
+        Fbo::SharedPtr getFboDouble() const { return mpFboDouble; }
 
         /** Get the resource view to an eye's resource view
         */
@@ -66,6 +68,7 @@ namespace Falcor
 
     private:
         Fbo::SharedPtr mpFbo;
+        Fbo::SharedPtr mpFboDouble;
         Texture::SharedPtr mpLeftView;
         Texture::SharedPtr mpRightView;
     };

@@ -51,6 +51,8 @@ namespace Falcor
             \param[in] mipLevels Optional. The number of mip levels to create. You can use Texture#kMaxPossible to create the entire chain
         */
         Fbo::SharedPtr create2D(uint32_t width, uint32_t height, const Fbo::Desc& fboDesc, uint32_t arraySize = 1, uint32_t mipLevels = 1);
+        Texture::SharedPtr createTexture2D(uint32_t w, uint32_t h, ResourceFormat format, uint32_t sampleCount, uint32_t arraySize, uint32_t mipLevels, Texture::BindFlags flags);
+        Texture::BindFlags getBindFlags(bool isDepth, bool allowUav);
 
         /** Create a color-only cubemap framebuffer.
             \param[in] width width of the render-targets.

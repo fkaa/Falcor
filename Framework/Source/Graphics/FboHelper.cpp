@@ -62,7 +62,7 @@ namespace Falcor
             return false;
         }
 
-        static Texture::SharedPtr createTexture2D(uint32_t w, uint32_t h, ResourceFormat format, uint32_t sampleCount, uint32_t arraySize, uint32_t mipLevels, Texture::BindFlags flags)
+         Texture::SharedPtr createTexture2D(uint32_t w, uint32_t h, ResourceFormat format, uint32_t sampleCount, uint32_t arraySize, uint32_t mipLevels, Texture::BindFlags flags)
         {
             if (format == ResourceFormat::Unknown)
             {
@@ -83,7 +83,7 @@ namespace Falcor
             return pTex;
         }
 
-        static Texture::BindFlags getBindFlags(bool isDepth, bool allowUav)
+         Texture::BindFlags getBindFlags(bool isDepth, bool allowUav)
         {
             Texture::BindFlags flags = Texture::BindFlags::ShaderResource;
             flags |= isDepth ? Texture::BindFlags::DepthStencil : Texture::BindFlags::RenderTarget;
