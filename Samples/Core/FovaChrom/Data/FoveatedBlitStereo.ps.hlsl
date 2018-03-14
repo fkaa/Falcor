@@ -12,7 +12,7 @@ float3 ConvertColor(float3 input) {
         return YCoCgToRGB(input);
     }
     else if (colorspace == 1) {
-        return YCoCg24ToRGB(input);
+        return YCoCg24ToRGB(input).brg;
     }
     else {
         return input.yzy;

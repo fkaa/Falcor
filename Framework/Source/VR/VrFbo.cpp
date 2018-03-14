@@ -49,6 +49,9 @@ namespace Falcor
 
         // HACK: FOVE returns full display, not eye
         renderSize.y /= 2;
+        int temp = renderSize.x;
+        renderSize.x = renderSize.y;
+        renderSize.y = temp;
         return renderSize;
     }
 

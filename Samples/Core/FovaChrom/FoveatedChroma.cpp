@@ -458,6 +458,7 @@ int main(int argc, char** argv)
     config.windowDesc.width = 1600;
     config.windowDesc.resizableWindow = true;
     config.deviceDesc.enableVR = true;
+    config.deviceDesc.enableVsync = false;
 #ifdef FALCOR_VK
     config.deviceDesc.enableDebugLayer = false; // OpenVR requires an extension that the debug layer doesn't recognize. It causes the application to crash
 #endif
