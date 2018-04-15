@@ -77,8 +77,14 @@ void StereoRendering::initVR()
     mSubmitModeList.clear();
     mSubmitModeList.push_back({ (int)RenderMode::Mono, "Render to Screen" });
 
+    
     if (VRSystem::instance())
     {
+        mpFove = std::unique_ptr<Fove::IFVRHeadset> { Fove::GetFVRHeadset() };
+        if (!mpFove)
+            return;
+        mpFove->Initialise(Fove::EFVR_ClientCapabilities::Orientation | Fove::EFVR_ClientCapabilities::Gaze);
+
         // Create the FBOs
         Fbo::Desc vrFboDesc;
 
@@ -142,6 +148,8 @@ void StereoRendering::submitStereo(bool singlePassStereo)
     VRDisplay::Eye eyes[] = { VRDisplay::Eye::Left, VRDisplay::Eye::Right };
     Fbo::SharedPtr fbos[] = { mpTempVrFBLeft, mpTempVrFBRight };
     if (mpDebugFoveation) {
+        mpVrFbo->unwrap(mpRenderContext.get());
+
         for (int i = 0; i < 2; ++i) {
             auto eye = eyes[i];
             auto fbo = fbos[i];
@@ -157,10 +165,10 @@ void StereoRendering::submitStereo(bool singlePassStereo)
             fbo->getColorTexture(0)->generateMips();
         }
 
-        mpVrFbo->unwrap(mpRenderContext.get());
+        //mpVrFbo->unwrap(mpRenderContext.get());
 
         mpBlitVrLeftVars->setTexture("gTextureLeft", mpTempVrFBLeft->getColorTexture(0));
-        mpBlitVrLeftVars->setTexture("gTextureRight", mpTempVrFBLeft->getColorTexture(0));
+        mpBlitVrLeftVars->setTexture("gTextureRight", mpTempVrFBRight->getColorTexture(0));
         mpBlitVrLeftVars->setSampler("gSampler", mpBilinearSampler);
 
         mpGraphicsState->setFbo(mpVrFbo->getFboDouble());
@@ -334,8 +342,9 @@ void StereoRendering::onLoad()
     samplerDesc.setFilterMode(Sampler::Filter::Linear, Sampler::Filter::Linear, Sampler::Filter::Linear);
     samplerDesc.setAddressingMode(Sampler::AddressMode::Clamp, Sampler::AddressMode::Clamp, Sampler::AddressMode::Clamp);
     mpBilinearSampler = Sampler::create(samplerDesc);
-    samplerDesc.setFilterMode(Sampler::Filter::Linear, Sampler::Filter::Linear, Sampler::Filter::Linear);
-    samplerDesc.setAddressingMode(Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap);
+    samplerDesc.setFilterMode(Sampler::Filter::Point, Sampler::Filter::Point, Sampler::Filter::Linear);
+    samplerDesc.setAddressingMode(Sampler::AddressMode::Mirror, Sampler::AddressMode::Mirror, Sampler::AddressMode::Wrap);
+    samplerDesc.setLodParams(0, 0, 0);
     mpBilinearSampler2 = Sampler::create(samplerDesc);;
 
     loadScene("Scenes/breakfast.fscene");
@@ -359,9 +368,18 @@ void StereoRendering::onFrameRender()
 {
     static uint32_t frameCount = 0u;
 
+    Fove::SFVR_Vec2 left, right;
+    if (Fove::EFVR_ErrorCode::None == mpFove->GetGazeVectors2D(&left, &right)) {
+        mpGazePosition.x = left.x * 0.5f + 0.5f;
+        mpGazePosition.y = 1 - (left.y * 0.5f + 0.5f);
+    }
+    
     ConstantBuffer::SharedPtr pCB = mpBlitVars->getConstantBuffer("FoveatedCB");
     pCB["gEyePos"] = glm::vec4(mpGazePosition, mpDebugViz ? 1.0 : 0.0, mpColorSpace);
     pCB["gEyeLevels"] = mpFoveationLevels;
+
+    ConstantBuffer::SharedPtr pVRCB = mpBlitVrLeftVars->getConstantBuffer("FoveatedCB");
+    pVRCB["gEyePos"] = glm::vec4(mpGazePosition, mpDebugViz ? 1.0 : 0.0, mpColorSpace);
 
     ConstantBuffer::SharedPtr pCCB = mpColorVars->getConstantBuffer("FoveatedCB");
     pCCB["gEyePos"] = glm::vec4(mpGazePosition, mpDebugViz ? 1.0 : 0.0, mpColorSpace);

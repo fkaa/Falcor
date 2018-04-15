@@ -45,7 +45,7 @@ public:
     void onGuiRender() override;
 
 private:
-
+    std::unique_ptr<Fove::IFVRHeadset> mpFove = nullptr;
     Scene::SharedPtr mpScene;
     SceneRenderer::SharedPtr mpSceneRenderer;
     SceneEditor::UniquePtr mpEditor = nullptr;

@@ -48,7 +48,10 @@ namespace Falcor
         glm::ivec2 renderSize = pDisplay->getRecommendedRenderSize();
 
         // HACK: FOVE returns full display, not eye
-        renderSize.x /= 2;
+        renderSize.y /= 2;
+        int temp = renderSize.x;
+        renderSize.x = renderSize.y;
+        renderSize.y = temp;
         return renderSize;
     }
 
