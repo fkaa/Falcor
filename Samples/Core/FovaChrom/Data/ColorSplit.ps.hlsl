@@ -9,6 +9,7 @@ cbuffer PerImageCB : register(b0)
 cbuffer FoveatedCB : register(b1)
 {
     float4 gEyePos;
+    float4 gEyeLevels;
 };
 
 float3 ConvertColor(float3 input) {

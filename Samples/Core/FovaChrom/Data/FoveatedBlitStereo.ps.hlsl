@@ -1,5 +1,23 @@
 #include "Conversions.hlsli"
 
+cbuffer PerImageCB : register(b0)
+{
+    Texture2D		gTextureLeft;
+    Texture2D		gTextureRight;
+    SamplerState	gSampler;
+};
+
+cbuffer FoveatedCB : register(b1)
+{
+    float4 gEyePos;
+    float4 gEyeLevels;
+};
+
+struct StereoOut {
+    float4 eyeL : SV_TARGET0;
+    float4 eyeR : SV_TARGET1;
+};
+
 float3 ConvertColor(float3 input) {
     int colorspace = int(gEyePos.w);
 
@@ -14,22 +32,7 @@ float3 ConvertColor(float3 input) {
     }
 }
 
-cbuffer PerImageCB : register(b0)
-{
-    Texture2D		gTextureLeft;
-    Texture2D		gTextureRight;
-    SamplerState	gSampler;
-};
 
-cbuffer FoveatedCB : register(b1)
-{
-    float4 gEyePos;
-};
-
-struct StereoOut {
-    float4 eyeL : SV_TARGET0;
-    float4 eyeR : SV_TARGET1;
-};
 
 StereoOut main(in float2 texC : TEXCOORD, in float4 fragPos : SV_POSITION)
 {

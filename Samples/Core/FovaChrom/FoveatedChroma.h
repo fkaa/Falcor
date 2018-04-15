@@ -63,7 +63,14 @@ private:
     Sampler::SharedPtr mpBilinearSampler2;
     RasterizerState::SharedPtr mpFSRasterizerState;
 
+    Fbo::SharedPtr mpMainFB;
     Fbo::SharedPtr mpTempFB;
+    Fbo::SharedPtr mpResolveFB;
+
+    Fbo::SharedPtr mpMainVrFBLeft;
+    Fbo::SharedPtr mpMainVrFBRight;
+    Fbo::SharedPtr mpResolveVrFBLeft;
+    Fbo::SharedPtr mpResolveVrFBRight;
     Fbo::SharedPtr mpTempVrFBLeft;
     Fbo::SharedPtr mpTempVrFBRight;
     ConstantBuffer::SharedPtr mpFoveatedBuffer;
@@ -74,6 +81,7 @@ private:
     bool mpDebugViz = false;
     bool mpMouseMovingGaze = false;
     glm::vec2 mpGazePosition;
+    glm::vec4 mpFoveationLevels;
 
     FullScreenPass::UniquePtr mpBlit;
     GraphicsVars::SharedPtr mpBlitVars;

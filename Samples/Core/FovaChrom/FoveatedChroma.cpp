@@ -52,6 +52,8 @@ void StereoRendering::onGuiRender()
     {
     }
 
+    mpGui->addFloat4Var("Foveation", mpFoveationLevels, 0.f, 10.f);
+
     if (mpEditor)
     {
         mpEditor->renderGui(mpGui.get());
@@ -182,7 +184,7 @@ void StereoRendering::submitToScreen()
 
     mpGraphicsState->setDepthStencilState(mpDepthStencilState);
     mpGraphicsState->setProgram(mpMonoSPSProgram);
-    mpGraphicsState->setFbo(mpDefaultFBO);
+    mpGraphicsState->setFbo(mpMainFB);
     mpRenderContext->setGraphicsState(mpGraphicsState);
     mpRenderContext->setGraphicsVars(mpMonoSPSVars);
     mpSceneRenderer->renderScene(mpRenderContext.get());
@@ -191,8 +193,14 @@ void StereoRendering::submitToScreen()
     mSkyBox.pEffect->render(mpRenderContext.get(), mpSceneRenderer->getScene()->getActiveCamera().get());
     mpGraphicsState->setDepthStencilState(nullptr);
 
+    if (mpDebugFoveation)
+    mpRenderContext->blit(mpMainFB->getColorTexture(0)->getSRV(), mpResolveFB->getRenderTargetView(0));
+    else
+    mpRenderContext->blit(mpMainFB->getColorTexture(0)->getSRV(), mpDefaultFBO->getRenderTargetView(0));
+    //mpRenderContext->blit(mpMainFB->getDepthStencilTexture()->getSRV(), mpResolveFB->getRenderTargetView(2));
+
     if (mpDebugFoveation) {
-        mpColorVars->setTexture("gTexture", mpDefaultFBO->getColorTexture(0));
+        mpColorVars->setTexture("gTexture", mpResolveFB->getColorTexture(0));
         mpColorVars->setSampler("gSampler", mpTriLinearSampler);
 
         mpGraphicsState->setFbo(mpTempFB);
@@ -309,14 +317,18 @@ void StereoRendering::onLoad()
     Fbo::Desc fboDesc;
     fboDesc.setColorTarget(0, Falcor::ResourceFormat::RGBA32Float);
     fboDesc.setDepthStencilTarget(ResourceFormat::D32Float);
+    fboDesc.setSampleCount(4);
     if (mpVrFbo) {
-        mpTempVrFBLeft = FboHelper::create2D(mpVrFbo->getFbo()->getWidth(), mpVrFbo->getFbo()->getHeight(), fboDesc, 1, Texture::kMaxPossible);
-        mpTempVrFBRight = FboHelper::create2D(mpVrFbo->getFbo()->getWidth(), mpVrFbo->getFbo()->getHeight(), fboDesc, 1, Texture::kMaxPossible);
+        mpTempVrFBLeft = FboHelper::create2D(mpVrFbo->getFbo()->getWidth(), mpVrFbo->getFbo()->getHeight(), fboDesc, 1, 1);
+        mpTempVrFBRight = FboHelper::create2D(mpVrFbo->getFbo()->getWidth(), mpVrFbo->getFbo()->getHeight(), fboDesc, 1, 1);
     }
+    mpMainFB = FboHelper::create2D(mpDefaultFBO->getWidth(), mpDefaultFBO->getHeight(), fboDesc, 1, 1);
+    fboDesc.setSampleCount(1);
+    mpResolveFB = FboHelper::create2D(mpDefaultFBO->getWidth(), mpDefaultFBO->getHeight(), fboDesc, 1, Texture::kMaxPossible);
     mpTempFB = FboHelper::create2D(mpDefaultFBO->getWidth(), mpDefaultFBO->getHeight(), fboDesc, 1, Texture::kMaxPossible);
 
     Sampler::Desc samplerDesc;
-    samplerDesc.setFilterMode(Sampler::Filter::Point, Sampler::Filter::Point, Sampler::Filter::Point);
+    samplerDesc.setFilterMode(Sampler::Filter::Linear, Sampler::Filter::Linear, Sampler::Filter::Linear);
     mpTriLinearSampler = Sampler::create(samplerDesc);
 
     samplerDesc.setFilterMode(Sampler::Filter::Linear, Sampler::Filter::Linear, Sampler::Filter::Linear);
@@ -326,7 +338,7 @@ void StereoRendering::onLoad()
     samplerDesc.setAddressingMode(Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap);
     mpBilinearSampler2 = Sampler::create(samplerDesc);;
 
-    loadScene("Scenes/ogre.fscene");
+    loadScene("Scenes/breakfast.fscene");
     //loadScene("Bistro/Bistro_Interior.fscene");
 }
 
@@ -349,11 +361,13 @@ void StereoRendering::onFrameRender()
 
     ConstantBuffer::SharedPtr pCB = mpBlitVars->getConstantBuffer("FoveatedCB");
     pCB["gEyePos"] = glm::vec4(mpGazePosition, mpDebugViz ? 1.0 : 0.0, mpColorSpace);
+    pCB["gEyeLevels"] = mpFoveationLevels;
 
     ConstantBuffer::SharedPtr pCCB = mpColorVars->getConstantBuffer("FoveatedCB");
     pCCB["gEyePos"] = glm::vec4(mpGazePosition, mpDebugViz ? 1.0 : 0.0, mpColorSpace);
+    pCCB["gEyeLevels"] = mpFoveationLevels;
 
-    mpRenderContext->clearFbo(mpDefaultFBO.get(), kClearColor, 1.0f, 0, FboAttachmentType::All);
+    mpRenderContext->clearFbo(mpMainFB.get(), kClearColor, 1.0f, 0, FboAttachmentType::All);
     mpRenderContext->clearFbo(mpTempFB.get(), kClearColor, 1.0f, 0, FboAttachmentType::All);
 
     if(mpSceneRenderer)

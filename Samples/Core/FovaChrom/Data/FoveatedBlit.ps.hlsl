@@ -9,6 +9,7 @@ cbuffer PerImageCB : register(b0)
 cbuffer FoveatedCB : register(b1)
 {
     float4 gEyePos;
+    float4 gEyeLevels;
 };
 
 float3 ConvertColor(float3 input) {
@@ -23,6 +24,14 @@ float3 ConvertColor(float3 input) {
     else {
         return input.yzy;
     }
+}
+
+float GetMipLevel(float4 fragPos)
+{
+    float distance = 
+    float level = 0;
+
+    return level;
 }
 
 float4 main(in float2 texC : TEXCOORD, in float4 fragPos : SV_POSITION) : SV_TARGET
@@ -43,7 +52,7 @@ float4 main(in float2 texC : TEXCOORD, in float4 fragPos : SV_POSITION) : SV_TAR
 
     if (gEyePos.z == 1.0) {
         if (FoveaIntensity < 0.05) {
-            rgb = float3(1, 0.6, 0.3);
+            rgb = col;
         }
         return float4(rgb, 1.0);
     }
