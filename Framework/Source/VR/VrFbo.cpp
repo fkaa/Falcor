@@ -64,15 +64,12 @@ namespace Falcor
         VrFbo::UniquePtr pVrFbo = std::make_unique<VrFbo>();
 
         Fbo::SharedPtr pFbo = Fbo::create();
-        Fbo::SharedPtr pFboDouble = Fbo::create();
 
-        auto samples = 1;
+        auto samples = desc.getSampleCount();
 
         Texture::BindFlags flags = FboHelper::getBindFlags(false, desc.isColorTargetUav(0));
         Texture::SharedPtr pTex = FboHelper::createTexture2D(width, height, desc.getColorTargetFormat(0), samples, 2, 1, flags);
         pFbo->attachColorTarget(pTex, 0, 0, 0, Fbo::kAttachEntireMipLevel);
-        pFboDouble->attachColorTarget(pTex, 0, 0, 0, 1);
-        pFboDouble->attachColorTarget(pTex, 1, 0, 1, 1);
 
         Texture::BindFlags dflags = FboHelper::getBindFlags(true, desc.isDepthStencilUav());
         Texture::SharedPtr pDepth = FboHelper::createTexture2D(width, height, desc.getDepthStencilFormat(), samples, 2, 1, dflags);
@@ -80,42 +77,53 @@ namespace Falcor
 
 
         pVrFbo->mpFbo = pFbo;
-        pVrFbo->mpFboDouble = pFboDouble;
 
         // create the textures
         // in the future we should use SRVs directly
         // or some other way to avoid copying resources
 
         pVrFbo->mpLeftView = Texture::create2D(width, height, desc.getColorTargetFormat(0),1,1);
+        pVrFbo->mpResolveLeft = Fbo::create();
+        pVrFbo->mpResolveLeft->attachColorTarget(pVrFbo->mpLeftView, 0, 0, 0);
         pVrFbo->mpRightView = Texture::create2D(width, height, desc.getColorTargetFormat(0),1,1);
+        pVrFbo->mpResolveRight = Fbo::create();
+        pVrFbo->mpResolveRight->attachColorTarget(pVrFbo->mpRightView, 0, 0, 0);
+
+        Fbo::SharedPtr pFboDouble = Fbo::create();
+        pFboDouble->attachColorTarget(pVrFbo->mpLeftView, 0, 0, 0, 1);
+        pFboDouble->attachColorTarget(pVrFbo->mpRightView, 1, 0, 0, 1);
+        pVrFbo->mpFboDouble = pFboDouble;
 
         return pVrFbo;
     }
     
     void VrFbo::unwrap(RenderContext* pRenderCtx) const
     {
-        uint32_t ltSrcSubresourceIdx = mpFbo->getColorTexture(0)->getSubresourceIndex(0, 0);
+        /*uint32_t ltSrcSubresourceIdx = mpFbo->getColorTexture(0)->getSubresourceIndex(0, 0);
         uint32_t rtSrcSubresourceIdx = mpFbo->getColorTexture(0)->getSubresourceIndex(1, 0);
 
         uint32_t ltDstSubresourceIdx = mpLeftView->getSubresourceIndex(0, 0);
         uint32_t rtDstSubresourceIdx = mpRightView->getSubresourceIndex(0, 0);
 
         pRenderCtx->copySubresource(mpLeftView.get(), ltDstSubresourceIdx, mpFbo->getColorTexture(0).get(), ltSrcSubresourceIdx);
-        pRenderCtx->copySubresource(mpRightView.get(), rtDstSubresourceIdx, mpFbo->getColorTexture(0).get(), rtSrcSubresourceIdx);
+        pRenderCtx->copySubresource(mpRightView.get(), rtDstSubresourceIdx, mpFbo->getColorTexture(0).get(), rtSrcSubresourceIdx);*/
+
+        pRenderCtx->blit(mpFbo->getColorTexture(0)->getSRV(0, 1, 0, 1), mpResolveLeft->getRenderTargetView(0));
+        pRenderCtx->blit(mpFbo->getColorTexture(0)->getSRV(0, 1, 1, 1), mpResolveRight->getRenderTargetView(0));
     }
 
     void VrFbo::submitToHmd(RenderContext* pRenderCtx) const
     {
         VRSystem* pVrSystem = VRSystem::instance();
 
-        uint32_t ltSrcSubresourceIdx = mpFbo->getColorTexture(0)->getSubresourceIndex(0, 0);
+        /*uint32_t ltSrcSubresourceIdx = mpFbo->getColorTexture(0)->getSubresourceIndex(0, 0);
         uint32_t rtSrcSubresourceIdx = mpFbo->getColorTexture(0)->getSubresourceIndex(1, 0);
 
         uint32_t ltDstSubresourceIdx = mpLeftView->getSubresourceIndex(0, 0);
         uint32_t rtDstSubresourceIdx = mpRightView->getSubresourceIndex(0, 0);
 
         pRenderCtx->copySubresource(mpLeftView.get(),  ltDstSubresourceIdx, mpFbo->getColorTexture(0).get(), ltSrcSubresourceIdx);
-        pRenderCtx->copySubresource(mpRightView.get(), rtDstSubresourceIdx, mpFbo->getColorTexture(0).get(), rtSrcSubresourceIdx);
+        pRenderCtx->copySubresource(mpRightView.get(), rtDstSubresourceIdx, mpFbo->getColorTexture(0).get(), rtSrcSubresourceIdx);*/
 
         pVrSystem->submit(VRDisplay::Eye::Left, mpLeftView, pRenderCtx);
         pVrSystem->submit(VRDisplay::Eye::Right, mpRightView, pRenderCtx);

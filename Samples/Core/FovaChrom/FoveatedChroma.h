@@ -31,6 +31,8 @@
 #include "FoveTypes.h"
 #include "IFVRHeadset.h"
 
+#include "Utils\Psychophysics\Experiment.h"
+
 using namespace Falcor;
 
 class StereoRendering : public Sample
@@ -43,9 +45,13 @@ public:
     bool onMouseEvent(const MouseEvent& mouseEvent) override;
     void onDataReload() override;
     void onGuiRender() override;
+    void startExperiment();
 
 private:
+    std::unique_ptr<Psychophysics::Experiment> mpExperiment = nullptr;
+
     std::unique_ptr<Fove::IFVRHeadset> mpFove = nullptr;
+    unsigned int mpCurrentLayer = 0;
     Scene::SharedPtr mpScene;
     SceneRenderer::SharedPtr mpSceneRenderer;
     SceneEditor::UniquePtr mpEditor = nullptr;

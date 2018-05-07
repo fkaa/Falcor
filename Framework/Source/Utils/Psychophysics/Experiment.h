@@ -96,6 +96,8 @@ namespace Falcor
             */
             void clear();
 
+            SingleThresholdMeasurement getMeasurement();
+
         private:
 
             std::vector<std::string> mConditionParamNames;

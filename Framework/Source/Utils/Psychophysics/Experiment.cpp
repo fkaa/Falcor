@@ -201,5 +201,10 @@ namespace Falcor
             mExpDesc = ExperimentDescription();
         }
 
+        SingleThresholdMeasurement Experiment::getMeasurement()
+        {
+            return mMeasurements[0];
+        }
+
     }
 }

@@ -3,6 +3,7 @@
 cbuffer FoveatedCB : register(b1)
 {
     float4 gEyePos;
+    float4 gEyeLevels;
 };
 
 float3 ConvertColor(float3 input) {
@@ -26,48 +27,30 @@ cbuffer PerImageCB : register(b0)
     SamplerState	gSampler;
 };
 
-cbuffer FoveatedCB : register(b1)
-{
-    float4 gEyePos;
-    float4 gEyeLevels;
-};
-
 struct StereoOut {
     float4 eyeL : SV_TARGET0;
     float4 eyeR : SV_TARGET1;
 };
 
-float3 ConvertColor(float3 input) {
-    int colorspace = int(gEyePos.w);
-
-    if (colorspace == 0) {
-        return YCoCgToRGB(input);
-    }
-    else if (colorspace == 1) {
-        return YCoCg24ToRGB(input);
-    }
-    else {
-        return input.yzy;
-    }
-}
-
-
-
-StereoOut main(in float2 texC : TEXCOORD, in float4 fragPos : SV_POSITION)
+float GetMipLevel(float4 fragPos)
 {
-    float FoveaIntensity = distance(gEyePos.xy, (side * float2(1480, 0) + fragPos.xy) / float2(1280, 1440));
-    FoveaIntensity = 1 - pow(1 - FoveaIntensity, 3);
-    FoveaIntensity *= 5;
+    float dist = distance(gEyePos.xy, fragPos.xy / float2(1600, 1024));
+    float level = 0;
 
-    return FoveaIntensity;
+    if (dist < 0.125) level = lerp(0, gEyeLevels.x, dist * 8);
+    else if (dist < 0.375) level = lerp(gEyeLevels.x, gEyeLevels.y, (dist - 0.125) * 4);
+    else if (dist < 0.625) level = lerp(gEyeLevels.y, gEyeLevels.z, (dist - 0.375) * 4);
+    else level = lerp(gEyeLevels.z, gEyeLevels.w, (dist - 0.625) * 4);
+
+    return level;
 }
 
 StereoOut main(in float2 texC : TEXCOORD, in float4 fragPos : SV_POSITION)
 {
     StereoOut output;
 
-    float FoveaIntensity_L = GetFovea(fragPos, 0);
-    float FoveaIntensity_R = GetFovea(fragPos, 0);
+    float FoveaIntensity_L = GetMipLevel(fragPos);
+    float FoveaIntensity_R = GetMipLevel(fragPos);
 
     float2 CrCb_L = gTextureLeft.SampleLevel(gSampler, texC, FoveaIntensity_L).yz;
     float Y_L = gTextureLeft.Sample(gSampler, texC).x;
@@ -80,13 +63,15 @@ StereoOut main(in float2 texC : TEXCOORD, in float4 fragPos : SV_POSITION)
     if (gEyePos.z == 1.0) {
         float3 col_L;// = ColorFn1DfiveC(frac(FoveaIntensity_L), int(FoveaIntensity_L));
         float3 col_R;// = ColorFn1DfiveC(frac(FoveaIntensity_R), int(FoveaIntensity_R));
+
+        float col = FoveaIntensity_L/10.f;
         if (FoveaIntensity_L < 0.05) {
-            Rgb_L = float3(1, 0.4, 0.3);
+            Rgb_L = col.xxx;
         }
         if (FoveaIntensity_R < 0.05) {
-            Rgb_R = float3(1, 0.4, 0.3);
+            Rgb_R = col.xxx;
         }
-        
+
         output.eyeL = float4(Rgb_L, 1.0);
         output.eyeR = float4(Rgb_R, 1.0);
     }

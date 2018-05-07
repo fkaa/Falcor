@@ -28,19 +28,22 @@ float3 ConvertColor(float3 input) {
 
 float GetMipLevel(float4 fragPos)
 {
-    float distance = 
+    float dist = distance(gEyePos.xy, fragPos.xy / float2(1600, 1024));
     float level = 0;
+
+    if (dist < 0.125) level = lerp(0, gEyeLevels.x, dist * 8);
+    else if (dist < 0.375) level = lerp(gEyeLevels.x, gEyeLevels.y, (dist - 0.125) * 4);
+    else if (dist < 0.625) level = lerp(gEyeLevels.y, gEyeLevels.z, (dist - 0.375) * 4);
+    else level = lerp(gEyeLevels.z, gEyeLevels.w, (dist - 0.625) * 4);
 
     return level;
 }
 
 float4 main(in float2 texC : TEXCOORD, in float4 fragPos : SV_POSITION) : SV_TARGET
 {
-    float FoveaIntensity = distance(gEyePos.xy, fragPos.xy / float2(2560, 1440));
-    FoveaIntensity = 1 - pow(1 - FoveaIntensity, 3);
-    FoveaIntensity *= 5;
+    float FoveaIntensity = GetMipLevel(fragPos);
 
-    float3 col = ColorFn1DfiveC(frac(FoveaIntensity), int(FoveaIntensity));
+    float col = FoveaIntensity/10.f;
     float2 CrCb = gTexture.SampleLevel(gSampler, texC, FoveaIntensity).yz;
     float Y = gTexture.Sample(gSampler, texC).x;
     float Cr = CrCb.x;
@@ -51,9 +54,9 @@ float4 main(in float2 texC : TEXCOORD, in float4 fragPos : SV_POSITION) : SV_TAR
     float3 rgb = ConvertColor(YCrCb);
 
     if (gEyePos.z == 1.0) {
-        if (FoveaIntensity < 0.05) {
-            rgb = col;
-        }
+        //if (FoveaIntensity < 0.05) {
+            rgb = col.xxx;
+        //}
         return float4(rgb, 1.0);
     }
     else {

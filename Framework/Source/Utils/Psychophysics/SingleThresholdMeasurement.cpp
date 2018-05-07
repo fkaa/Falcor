@@ -55,18 +55,18 @@ namespace Falcor
                         mExpParam.mMaxLimitHitCount = 2;
                     }
                     // First, set the stimulus level perturbed within the initial random range
-                    float perturbation;
+                    float perturbation = 0;
                     if (mExpParam.mMinLevelStepSize == 0)
                     { 
                         perturbation = 0;
                     }
-                    else
+                    /*else
                     {
                         int32_t numMinSteps = (int32_t)(mExpParam.mInitLevelRandomRange / mExpParam.mMinLevelStepSize);
                         int32_t randomSign = 2 * (rand() % 2) - 1;
                         int32_t stepsForPerturbation = randomSign * (rand() % numMinSteps);
                         perturbation = stepsForPerturbation * mExpParam.mMinLevelStepSize;
-                    }
+                    }*/
                     // set initial stim level
                     mCurrentLevel = mExpParam.mInitLevel + perturbation;
                     if (mCurrentLevel < mExpParam.mMinLevel)

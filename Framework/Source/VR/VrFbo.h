@@ -68,6 +68,8 @@ namespace Falcor
 
     private:
         Fbo::SharedPtr mpFbo;
+        Fbo::SharedPtr mpResolveLeft;
+        Fbo::SharedPtr mpResolveRight;
         Fbo::SharedPtr mpFboDouble;
         Texture::SharedPtr mpLeftView;
         Texture::SharedPtr mpRightView;

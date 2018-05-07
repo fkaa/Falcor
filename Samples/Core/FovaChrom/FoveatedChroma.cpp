@@ -31,6 +31,14 @@ static const glm::vec4 kClearColor(0.28f, 0.52f, 0.90f, 1);
 
 #pragma comment(lib, "FoveClient.lib")
 
+float graph_func(void *ud, int idx)
+{
+    if (idx == 0) return 0.f;
+    glm::vec4 levels = *reinterpret_cast<glm::vec4*>(ud);
+
+    return levels[idx - 1];
+}
+
 void StereoRendering::onGuiRender()
 {
     if (mpGui->addButton("Load Scene"))
@@ -38,7 +46,7 @@ void StereoRendering::onGuiRender()
         loadScene();
     }
 
-    if(VRSystem::instance())
+    if (VRSystem::instance())
     {
         mpGui->addCheckBox("Display VR FBO", mShowStereoViews);
     }
@@ -52,12 +60,43 @@ void StereoRendering::onGuiRender()
     {
     }
 
+    mpGui->addSeparator();
+
     mpGui->addFloat4Var("Foveation", mpFoveationLevels, 0.f, 10.f);
+    mpGui->addGraph("Foveation", graph_func, &mpFoveationLevels, 5, 0, 0.f, 10.f);
+    Psychophysics::SingleThresholdMeasurement m = mpExperiment->getMeasurement();
+    
+    char label[128];
+    snprintf(label, 128, "layer=%d { level=%.3f, reversals=%d }", mpCurrentLayer, mpExperiment->getLevelForCurrentTrial(), m.mReversalCount);
+    mpGui->addText(label);
 
     if (mpEditor)
     {
         mpEditor->renderGui(mpGui.get());
     }
+}
+
+void StereoRendering::startExperiment()
+{
+    mpExperiment->clear();
+
+    Psychophysics::ExperimentalDesignParameter parameters = {};
+    parameters.mMeasuringMethod = Psychophysics::PsychophysicsMethod::DiscreteStaircase;
+    parameters.mIsDefault = false;
+    parameters.mInitLevel = 0.f;
+    parameters.mInitLevelStepSize = 1.f;
+    parameters.mMinLevelStepSize = 1.f;
+    parameters.mNumUp = 1;
+    parameters.mNumDown = 2;
+
+    parameters.mMaxReversals = 3;
+    parameters.mMaxTotalTrialCount = 30;
+
+    parameters.mMaxLimitHitCount = 2;
+    parameters.mMinLevel = 0.f;
+    parameters.mMaxLevel = 10.f;
+    Psychophysics::ConditionParameter p = {};
+    mpExperiment->addCondition(p, parameters);
 }
 
 bool displaySpsWarning()
@@ -92,6 +131,7 @@ void StereoRendering::initVR()
         // TODO: maybe?
         //vrFboDesc.setColorTarget(1, mpDefaultFBO->getColorTexture(0)->getFormat());
         vrFboDesc.setDepthStencilTarget(mpDefaultFBO->getDepthStencilTexture()->getFormat());
+        vrFboDesc.setSampleCount(4);
 
         mpVrFbo = VrFbo::create(vrFboDesc);
 
@@ -315,6 +355,9 @@ void StereoRendering::loadScene(const std::string& filename)
 
 void StereoRendering::onLoad()
 {
+    mpExperiment = std::make_unique<Psychophysics::Experiment>();
+    startExperiment();
+
     mSPSSupported = gpDevice->isExtensionSupported("VK_NVX_multiview_per_view_attributes");
 
     initVR();
@@ -369,9 +412,23 @@ void StereoRendering::onFrameRender()
     static uint32_t frameCount = 0u;
 
     Fove::SFVR_Vec2 left, right;
-    if (Fove::EFVR_ErrorCode::None == mpFove->GetGazeVectors2D(&left, &right)) {
+    if (mpFove && Fove::EFVR_ErrorCode::None == mpFove->GetGazeVectors2D(&left, &right)) {
         mpGazePosition.x = left.x * 0.5f + 0.5f;
         mpGazePosition.y = 1 - (left.y * 0.5f + 0.5f);
+    }
+
+    for (int i = mpCurrentLayer; i < 4; ++i) {
+        mpFoveationLevels[i] = mpExperiment->getLevelForCurrentTrial();
+    }
+
+    if (mpExperiment->isComplete()) {
+        mpCurrentLayer++;
+        if (mpCurrentLayer > 3) {
+            // TODO: klart
+        }
+        else {
+            startExperiment();
+        }
     }
     
     ConstantBuffer::SharedPtr pCB = mpBlitVars->getConstantBuffer("FoveatedCB");
@@ -380,6 +437,7 @@ void StereoRendering::onFrameRender()
 
     ConstantBuffer::SharedPtr pVRCB = mpBlitVrLeftVars->getConstantBuffer("FoveatedCB");
     pVRCB["gEyePos"] = glm::vec4(mpGazePosition, mpDebugViz ? 1.0 : 0.0, mpColorSpace);
+    pVRCB["gEyeLevels"] = mpFoveationLevels;
 
     ConstantBuffer::SharedPtr pCCB = mpColorVars->getConstantBuffer("FoveatedCB");
     pCCB["gEyePos"] = glm::vec4(mpGazePosition, mpDebugViz ? 1.0 : 0.0, mpColorSpace);
@@ -424,6 +482,16 @@ bool StereoRendering::onKeyEvent(const KeyboardEvent& keyEvent)
     }
     if (keyEvent.key == KeyboardEvent::Key::R && keyEvent.type == KeyboardEvent::Type::KeyReleased) {
         mpDebugViz = !mpDebugViz;
+    }
+    if (keyEvent.key == KeyboardEvent::Key::Up && keyEvent.type == KeyboardEvent::Type::KeyPressed) {
+        mpExperiment->processResponse(1);
+    }
+    if (keyEvent.key == KeyboardEvent::Key::Down && keyEvent.type == KeyboardEvent::Type::KeyPressed) {
+        mpExperiment->processResponse(0);
+    }
+    if (keyEvent.key == KeyboardEvent::Key::K && keyEvent.type == KeyboardEvent::Type::KeyPressed) {
+        mpExperiment->clear();
+
     }
 
     return mpSceneRenderer ? mpSceneRenderer->onKeyEvent(keyEvent) : false;
