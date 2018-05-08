@@ -113,11 +113,11 @@ namespace Falcor
             }
             break;
         case Resource::Type::Texture2DMultisample:
-            if(arraySize > 1)
-            {
+            //if(arraySize > 1)
+            //{
                 desc.Texture2DMSArray.ArraySize = arraySize;
                 desc.Texture2DMSArray.FirstArraySlice = firstArraySlice;
-            }
+            //}
             break;
         case Resource::Type::Texture3D:
             assert(arraySize == 1);

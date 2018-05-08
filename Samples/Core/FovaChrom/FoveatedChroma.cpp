@@ -368,11 +368,11 @@ void StereoRendering::onLoad()
     Fbo::Desc fboDesc;
     fboDesc.setColorTarget(0, Falcor::ResourceFormat::RGBA32Float);
     fboDesc.setDepthStencilTarget(ResourceFormat::D32Float);
-    fboDesc.setSampleCount(4);
     if (mpVrFbo) {
-        mpTempVrFBLeft = FboHelper::create2D(mpVrFbo->getFbo()->getWidth(), mpVrFbo->getFbo()->getHeight(), fboDesc, 1, 1);
-        mpTempVrFBRight = FboHelper::create2D(mpVrFbo->getFbo()->getWidth(), mpVrFbo->getFbo()->getHeight(), fboDesc, 1, 1);
+        mpTempVrFBLeft = FboHelper::create2D(mpVrFbo->getFbo()->getWidth(), mpVrFbo->getFbo()->getHeight(), fboDesc, 1, 10);
+        mpTempVrFBRight = FboHelper::create2D(mpVrFbo->getFbo()->getWidth(), mpVrFbo->getFbo()->getHeight(), fboDesc, 1, 10);
     }
+    fboDesc.setSampleCount(4);
     mpMainFB = FboHelper::create2D(mpDefaultFBO->getWidth(), mpDefaultFBO->getHeight(), fboDesc, 1, 1);
     fboDesc.setSampleCount(1);
     mpResolveFB = FboHelper::create2D(mpDefaultFBO->getWidth(), mpDefaultFBO->getHeight(), fboDesc, 1, Texture::kMaxPossible);
@@ -385,9 +385,9 @@ void StereoRendering::onLoad()
     samplerDesc.setFilterMode(Sampler::Filter::Linear, Sampler::Filter::Linear, Sampler::Filter::Linear);
     samplerDesc.setAddressingMode(Sampler::AddressMode::Clamp, Sampler::AddressMode::Clamp, Sampler::AddressMode::Clamp);
     mpBilinearSampler = Sampler::create(samplerDesc);
-    samplerDesc.setFilterMode(Sampler::Filter::Point, Sampler::Filter::Point, Sampler::Filter::Linear);
+    samplerDesc.setFilterMode(Sampler::Filter::Linear, Sampler::Filter::Linear, Sampler::Filter::Linear);
     samplerDesc.setAddressingMode(Sampler::AddressMode::Mirror, Sampler::AddressMode::Mirror, Sampler::AddressMode::Wrap);
-    samplerDesc.setLodParams(0, 0, 0);
+    samplerDesc.setLodParams(0, 5, 0);
     mpBilinearSampler2 = Sampler::create(samplerDesc);;
 
     loadScene("Scenes/breakfast.fscene");
@@ -413,8 +413,12 @@ void StereoRendering::onFrameRender()
 
     Fove::SFVR_Vec2 left, right;
     if (mpFove && Fove::EFVR_ErrorCode::None == mpFove->GetGazeVectors2D(&left, &right)) {
-        mpGazePosition.x = left.x * 0.5f + 0.5f;
-        mpGazePosition.y = 1 - (left.y * 0.5f + 0.5f);
+        Fove::EFVR_Eye eye;
+        mpFove->CheckEyesClosed(&eye);
+        if (eye == Fove::EFVR_Eye::Neither) {
+            mpGazePosition.x = left.x * 0.5f + 0.5f;
+            mpGazePosition.y = 1 - (left.y * 0.5f + 0.5f);
+        }
     }
 
     for (int i = mpCurrentLayer; i < 4; ++i) {
@@ -491,7 +495,7 @@ bool StereoRendering::onKeyEvent(const KeyboardEvent& keyEvent)
     }
     if (keyEvent.key == KeyboardEvent::Key::K && keyEvent.type == KeyboardEvent::Type::KeyPressed) {
         mpExperiment->clear();
-
+        mpCurrentLayer = 0;
     }
 
     return mpSceneRenderer ? mpSceneRenderer->onKeyEvent(keyEvent) : false;

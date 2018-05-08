@@ -34,7 +34,7 @@ struct StereoOut {
 
 float GetMipLevel(float4 fragPos)
 {
-    float dist = distance(gEyePos.xy, fragPos.xy / float2(1600, 1024));
+    float dist = distance(gEyePos.xy, fragPos.xy / float2(1280, 1440));
     float level = 0;
 
     if (dist < 0.125) level = lerp(0, gEyeLevels.x, dist * 8);
@@ -65,12 +65,8 @@ StereoOut main(in float2 texC : TEXCOORD, in float4 fragPos : SV_POSITION)
         float3 col_R;// = ColorFn1DfiveC(frac(FoveaIntensity_R), int(FoveaIntensity_R));
 
         float col = FoveaIntensity_L/10.f;
-        if (FoveaIntensity_L < 0.05) {
             Rgb_L = col.xxx;
-        }
-        if (FoveaIntensity_R < 0.05) {
             Rgb_R = col.xxx;
-        }
 
         output.eyeL = float4(Rgb_L, 1.0);
         output.eyeR = float4(Rgb_R, 1.0);

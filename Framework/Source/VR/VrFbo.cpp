@@ -52,6 +52,10 @@ namespace Falcor
         int temp = renderSize.x;
         renderSize.x = renderSize.y;
         renderSize.y = temp;
+        
+        // HACK: none of the above works at all..
+        renderSize.x = 2560 / 2;
+        renderSize.y = 1440;
         return renderSize;
     }
 
@@ -82,12 +86,12 @@ namespace Falcor
         // in the future we should use SRVs directly
         // or some other way to avoid copying resources
 
-        pVrFbo->mpLeftView = Texture::create2D(width, height, desc.getColorTargetFormat(0),1,1);
+        pVrFbo->mpLeftView = Texture::create2D(width, height, desc.getColorTargetFormat(0),1,1, 0, Texture::BindFlags::ShaderResource | Texture::BindFlags::RenderTarget);
         pVrFbo->mpResolveLeft = Fbo::create();
-        pVrFbo->mpResolveLeft->attachColorTarget(pVrFbo->mpLeftView, 0, 0, 0);
-        pVrFbo->mpRightView = Texture::create2D(width, height, desc.getColorTargetFormat(0),1,1);
+        pVrFbo->mpResolveLeft->attachColorTarget(pVrFbo->mpLeftView, 0, 0, 0, 1);
+        pVrFbo->mpRightView = Texture::create2D(width, height, desc.getColorTargetFormat(0),1,1, 0, Texture::BindFlags::ShaderResource | Texture::BindFlags::RenderTarget);
         pVrFbo->mpResolveRight = Fbo::create();
-        pVrFbo->mpResolveRight->attachColorTarget(pVrFbo->mpRightView, 0, 0, 0);
+        pVrFbo->mpResolveRight->attachColorTarget(pVrFbo->mpRightView, 0, 0, 0, 1);
 
         Fbo::SharedPtr pFboDouble = Fbo::create();
         pFboDouble->attachColorTarget(pVrFbo->mpLeftView, 0, 0, 0, 1);
