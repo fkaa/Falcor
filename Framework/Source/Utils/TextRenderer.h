@@ -104,7 +104,7 @@ namespace Falcor
         uint32_t mCurrentVertexID = 0;
 
         void createVertexBuffer();
-        static const auto kMaxBatchSize = 1000;
+        static const auto kMaxBatchSize = 2000;
 
         void flush();
         Vertex* mpBufferData = nullptr;

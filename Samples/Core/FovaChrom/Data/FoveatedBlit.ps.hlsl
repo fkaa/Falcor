@@ -28,7 +28,7 @@ float3 ConvertColor(float3 input) {
 
 float GetMipLevel(float4 fragPos)
 {
-    float dist = distance(gEyePos.xy, fragPos.xy / float2(1600, 1024));
+    float dist = distance(gEyePos.xy, fragPos.xy / float2(1280, 720));
     float level = 0;
 
     if (dist < 0.125) level = lerp(0, gEyeLevels.x, dist * 8);

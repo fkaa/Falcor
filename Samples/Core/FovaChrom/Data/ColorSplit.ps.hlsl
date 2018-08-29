@@ -26,9 +26,17 @@ float3 ConvertColor(float3 input) {
     }
 }
 
+float3 GrayScale(float3 c)
+{
+    return dot(c.rgb, float3(0.3, 0.59, 0.11));
+}
+
 float4 main(in float2 texC : TEXCOORD) : SV_TARGET
 {
     float4 color = gTexture.Sample(gSampler, texC);
+    if (gEyeLevels.x == 1.f) {
+        color.xyz = lerp(color.xyz, GrayScale(color.xyz), gEyeLevels.y);
+    }
 
     return float4(ConvertColor(color.xyz), 1.0);
 }

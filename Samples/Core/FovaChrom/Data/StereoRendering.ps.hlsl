@@ -37,12 +37,12 @@ float4 main(VS_OUT vOut) : SV_TARGET
     ShadingOutput result;
     float4 fragColor = float4(0, 0, 0, 1);
 
-    for (uint l = 0; l < gLightsCount; l++)
-    {
-        evalMaterial(shAttr, gLights[l], result, l == 0);
-        fragColor.rgb += result.diffuseAlbedo * result.diffuseIllumination;
-        fragColor.rgb += result.specularAlbedo * result.specularIllumination;
-    }
+    //for (uint l = 0; l < gLightsCount; l++)
+    //{
+        evalMaterial(shAttr, gLights[0], result, true);
+        fragColor.rgb += result.diffuseAlbedo *result.diffuseIllumination;
+        //fragColor.rgb += result.specularAlbedo * result.specularIllumination;
+    //}
 
     fragColor.rgb += result.diffuseAlbedo * 0.1;
 

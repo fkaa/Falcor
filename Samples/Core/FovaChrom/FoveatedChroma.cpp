@@ -26,10 +26,33 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************************/
 #include "FoveatedChroma.h"
+#include <io.h>
+#include <cstdio>
+#include <cstdlib>
 
 static const glm::vec4 kClearColor(0.28f, 0.52f, 0.90f, 1);
 
 #pragma comment(lib, "FoveClient.lib")
+
+#define TRANSITION_TIME 1.5f
+#define TRANSITION_TIME_START 5.f
+#define BASE_PATH ""
+
+const char *GetStateString(ExperimentState state)
+{
+    switch (state) {
+    case ExperimentState::Init:
+        return "[init]";
+    case ExperimentState::Transition:
+        return "[transition]";
+    case ExperimentState::Trial:
+        return "[trial]";
+    case ExperimentState::End:
+        return "[end]";
+    default:
+        return "[?]";
+    }
+}
 
 float graph_func(void *ud, int idx)
 {
@@ -41,10 +64,6 @@ float graph_func(void *ud, int idx)
 
 void StereoRendering::onGuiRender()
 {
-    if (mpGui->addButton("Load Scene"))
-    {
-        loadScene();
-    }
 
     if (VRSystem::instance())
     {
@@ -55,25 +74,6 @@ void StereoRendering::onGuiRender()
     {
         setRenderMode();
     }
-
-    if (mpGui->addDropdown("Colorspace", mColorSpaceList, (uint32_t&)mpColorSpace))
-    {
-    }
-
-    mpGui->addSeparator();
-
-    mpGui->addFloat4Var("Foveation", mpFoveationLevels, 0.f, 10.f);
-    mpGui->addGraph("Foveation", graph_func, &mpFoveationLevels, 5, 0, 0.f, 10.f);
-    Psychophysics::SingleThresholdMeasurement m = mpExperiment->getMeasurement();
-    
-    char label[128];
-    snprintf(label, 128, "layer=%d { level=%.3f, reversals=%d }", mpCurrentLayer, mpExperiment->getLevelForCurrentTrial(), m.mReversalCount);
-    mpGui->addText(label);
-
-    if (mpEditor)
-    {
-        mpEditor->renderGui(mpGui.get());
-    }
 }
 
 void StereoRendering::startExperiment()
@@ -83,20 +83,75 @@ void StereoRendering::startExperiment()
     Psychophysics::ExperimentalDesignParameter parameters = {};
     parameters.mMeasuringMethod = Psychophysics::PsychophysicsMethod::DiscreteStaircase;
     parameters.mIsDefault = false;
-    parameters.mInitLevel = 0.f;
+    if (mpCurrentLayer >= 1)
+        parameters.mInitLevel = mpFoveationLevels[mpCurrentLayer - 1];
+    else
+        parameters.mInitLevel = 0.f;
+
     parameters.mInitLevelStepSize = 1.f;
     parameters.mMinLevelStepSize = 1.f;
     parameters.mNumUp = 1;
     parameters.mNumDown = 2;
 
     parameters.mMaxReversals = 3;
-    parameters.mMaxTotalTrialCount = 30;
+    parameters.mMaxTotalTrialCount = 20;
 
     parameters.mMaxLimitHitCount = 2;
-    parameters.mMinLevel = 0.f;
     parameters.mMaxLevel = 10.f;
+    if (mpCurrentLayer >= 1)
+        parameters.mMinLevel = mpFoveationLevels[mpCurrentLayer - 1];
+    else
+        parameters.mMinLevel = 0.f;
+
     Psychophysics::ConditionParameter p = {};
     mpExperiment->addCondition(p, parameters);
+}
+
+void StereoRendering::dumpResults()
+{
+
+    char filename[128];
+    for (int i = 1;; ++i) {
+        snprintf(filename, 128, BASE_PATH "participant_results_%d.txt", i);
+
+        if (_access(filename, 0) != -1) {
+
+            FILE *f = fopen(filename, "wb+");
+
+            for (int j = 0; j < 4; ++j) {
+                LayerResult &result = mpResults[j];
+
+                fprintf(f, "layer=%d,starting=%d\n", j, result.startingLayer);
+                for (auto r : result.responses) {
+                    fprintf(f, "\t>%d\n", r);
+                }
+            }
+
+            fprintf(f, "\ndebug:\n");
+            for (int j = 0; j < 4; ++j) {
+                LayerResult &result = mpResults[j];
+
+                fprintf(f, "layer=%d,starting=%d\n", j, result.startingLayer);
+                for (auto msg : result.debug) {
+                    fprintf(f, "\t>%s\n", msg.c_str());
+                }
+            }
+
+            fclose(f);
+            break;
+        }
+    }
+}
+
+void StereoRendering::debug(const char * s, ...)
+{
+    char buffer[128];
+    va_list args;
+    va_start(args, s);
+    vsnprintf(buffer, sizeof(buffer), s, args);
+    va_end(args);
+
+    mpResults[mpCurrentLayer].debug.push_back(std::string(buffer));
 }
 
 bool displaySpsWarning()
@@ -242,12 +297,18 @@ void StereoRendering::submitToScreen()
     mpGraphicsState->setDepthStencilState(nullptr);
 
     if (mpDebugFoveation)
-    mpRenderContext->blit(mpMainFB->getColorTexture(0)->getSRV(), mpResolveFB->getRenderTargetView(0));
+        mpRenderContext->blit(mpMainFB->getColorTexture(0)->getSRV(), mpResolveFB->getRenderTargetView(0));
     else
-    mpRenderContext->blit(mpMainFB->getColorTexture(0)->getSRV(), mpDefaultFBO->getRenderTargetView(0));
+        mpRenderContext->blit(mpMainFB->getColorTexture(0)->getSRV(), mpDefaultFBO->getRenderTargetView(0));
     //mpRenderContext->blit(mpMainFB->getDepthStencilTexture()->getSRV(), mpResolveFB->getRenderTargetView(2));
 
     if (mpDebugFoveation) {
+        if (mpTransitionTime > 0.f) {
+            mpBlur->setSigma((0.01f + sinf((1.f - mpTransitionTime / TRANSITION_TIME) * (float)M_PI)) * 5.5f);
+            //mpBlur->setSigma(mpTransitionTime);
+            mpBlur->execute(mpRenderContext.get(), mpResolveFB->getColorTexture(0), mpResolveFB);
+        }
+
         mpColorVars->setTexture("gTexture", mpResolveFB->getColorTexture(0));
         mpColorVars->setSampler("gSampler", mpTriLinearSampler);
 
@@ -356,6 +417,8 @@ void StereoRendering::loadScene(const std::string& filename)
 void StereoRendering::onLoad()
 {
     mpExperiment = std::make_unique<Psychophysics::Experiment>();
+    mpFont = TextRenderer::create();
+    mpBlur = GaussianBlur::create(11, 1.f);
     startExperiment();
 
     mSPSSupported = gpDevice->isExtensionSupported("VK_NVX_multiview_per_view_attributes");
@@ -373,9 +436,11 @@ void StereoRendering::onLoad()
         mpTempVrFBRight = FboHelper::create2D(mpVrFbo->getFbo()->getWidth(), mpVrFbo->getFbo()->getHeight(), fboDesc, 1, 10);
     }
     fboDesc.setSampleCount(4);
+    fboDesc.setColorTarget(0, Falcor::ResourceFormat::RGBA32Float);
     mpMainFB = FboHelper::create2D(mpDefaultFBO->getWidth(), mpDefaultFBO->getHeight(), fboDesc, 1, 1);
     fboDesc.setSampleCount(1);
     mpResolveFB = FboHelper::create2D(mpDefaultFBO->getWidth(), mpDefaultFBO->getHeight(), fboDesc, 1, Texture::kMaxPossible);
+    fboDesc.setColorTarget(0, Falcor::ResourceFormat::RGBA32Float);
     mpTempFB = FboHelper::create2D(mpDefaultFBO->getWidth(), mpDefaultFBO->getHeight(), fboDesc, 1, Texture::kMaxPossible);
 
     Sampler::Desc samplerDesc;
@@ -421,20 +486,12 @@ void StereoRendering::onFrameRender()
         }
     }
 
+    float t = (1.f - mpTransitionTime / TRANSITION_TIME);
     for (int i = mpCurrentLayer; i < 4; ++i) {
-        mpFoveationLevels[i] = mpExperiment->getLevelForCurrentTrial();
+        mpFoveationLevels[i] = glm::lerp(mpPrevLevel, mpExperiment->getLevelForCurrentTrial(), t);
     }
 
-    if (mpExperiment->isComplete()) {
-        mpCurrentLayer++;
-        if (mpCurrentLayer > 3) {
-            // TODO: klart
-        }
-        else {
-            startExperiment();
-        }
-    }
-    
+
     ConstantBuffer::SharedPtr pCB = mpBlitVars->getConstantBuffer("FoveatedCB");
     pCB["gEyePos"] = glm::vec4(mpGazePosition, mpDebugViz ? 1.0 : 0.0, mpColorSpace);
     pCB["gEyeLevels"] = mpFoveationLevels;
@@ -445,17 +502,17 @@ void StereoRendering::onFrameRender()
 
     ConstantBuffer::SharedPtr pCCB = mpColorVars->getConstantBuffer("FoveatedCB");
     pCCB["gEyePos"] = glm::vec4(mpGazePosition, mpDebugViz ? 1.0 : 0.0, mpColorSpace);
-    pCCB["gEyeLevels"] = mpFoveationLevels;
+    pCCB["gEyeLevels"] = glm::vec4(mpTransitionTime > 0.f ? 1.f : 0.f, sinf((1.f - mpTransitionTime / TRANSITION_TIME) * (float)M_PI), 0.f, 0.f);
 
     mpRenderContext->clearFbo(mpMainFB.get(), kClearColor, 1.0f, 0, FboAttachmentType::All);
     mpRenderContext->clearFbo(mpTempFB.get(), kClearColor, 1.0f, 0, FboAttachmentType::All);
 
-    if(mpSceneRenderer)
+    if (mpSceneRenderer)
     {
         mpEditor->update(mCurrentTime);
         mpSceneRenderer->update(mCurrentTime);
 
-        switch(mRenderMode)
+        switch (mRenderMode)
         {
         case RenderMode::Mono:
             submitToScreen();
@@ -471,12 +528,97 @@ void StereoRendering::onFrameRender()
         }
     }
 
-    std::string message = getFpsMsg();
-    message += "\nFrame counter: " + std::to_string(frameCount);
+    //renderText(message, glm::vec2(10, 10));
 
-    renderText(message, glm::vec2(10, 10));
+    mpFont->begin(mpRenderContext, glm::vec2(10, 10));
+
+    auto red = glm::vec3(0.89, 0.72, 0.09);
+    auto green = glm::vec3(0.19, 0.92, 0.12);
+    auto gray = glm::vec3(0.85, 0.85, 0.85);
+
+    mpFont->setTextColor(gray);
+    mpFont->renderLine(getFpsMsg());
+    mpFont->renderLine(std::string("state: ") + GetStateString(mpState));
+    mpFont->renderLine("levels:");
+    for (int i = 0; i < 4; ++i) {
+        char label[128];
+        int len = snprintf(label, 128, "  %d: %.3f (t=%d/20,r=%d/3)", i, mpFoveationLevels[i], (int)mpResults[i].responses.size(), mpResults[i].reverses);
+
+
+        if (i == mpCurrentLayer && mpState != ExperimentState::End) {
+            if (mpState == ExperimentState::Trial)
+                snprintf(label + len, 128 - len, " %.1f seconds left in current trial", mpTrialTime);
+            else if (mpState == ExperimentState::Transition)
+                snprintf(label + len, 128 - len, " %.1f seconds left in transition", mpTransitionTime);
+        }
+
+        mpFont->renderLine(std::string(label));
+    }
+
+    mpFont->renderLine("debug:");
+    for (int i = 0; i < mpResults[mpCurrentLayer].debug.size(); ++i) {
+        std::string msg = mpResults[mpCurrentLayer].debug[i];
+
+        char label[128];
+        snprintf(label, 128, "  %d: %s", i, msg.c_str());
+
+        mpFont->renderLine(std::string(label));
+    }
+
+    mpFont->end();
 
     frameCount++;
+    mpTimer.update();
+    mpTransitionTime -= mpTimer.getElapsedTime();
+    if (mpTransitionTime < 0.f) mpTransitionTime = 0.f;
+    mpTrialTime -= mpTimer.getElapsedTime();
+    if (mpTrialTime < 0.f) mpTrialTime = 0.f;
+
+    Psychophysics::SingleThresholdMeasurement m = mpExperiment->getMeasurement();
+    mpResults[mpCurrentLayer].reverses = m.mReversalCount;
+    mpResults[mpCurrentLayer].reverseLimit = m.mReversalCount;
+
+    if (mpExperiment->isComplete() && mpState != ExperimentState::Transition) {
+        if (mpCurrentLayer + 1 > 3 && mpState != ExperimentState::End) {
+            mpState = ExperimentState::End;
+            dumpResults();
+            debug("finished experiment");
+        }
+        else if (mpState != ExperimentState::End) {
+            mpCurrentLayer++;
+            startExperiment();
+            debug("finished layer %d, starting %d", mpCurrentLayer - 1, mpCurrentLayer);
+        }
+    }
+
+    // TODO: check if finished => goto ::End
+    switch (mpState) {
+    case ExperimentState::Init:
+        // TODO: instructions
+        break;
+    case ExperimentState::Transition:
+        if (mpTransitionTime <= 0.f) {
+            mpState = ExperimentState::Trial;
+            mpTrialTime = 8.f + (float)(rand() % 4);
+
+            debug("starting trial with stimulus %.1f", mpFoveationLevels[mpCurrentLayer]);
+        }
+        break;
+    case ExperimentState::Trial:
+        if (mpTrialTime <= 0.f) {
+            mpPrevLevel = mpFoveationLevels[mpCurrentLayer];
+            mpState = ExperimentState::Transition;
+            mpTransitionTime = TRANSITION_TIME;
+
+            mpExperiment->processResponse(0);
+            mpResults[mpCurrentLayer].responses.push_back(0);
+
+            debug("participant did not detect change.., change=%.1f", mpExperiment->getMeasurement().getCurrentLevel() - mpPrevLevel);
+        }
+        break;
+    case ExperimentState::End:
+        break;
+    }
 }
 
 bool StereoRendering::onKeyEvent(const KeyboardEvent& keyEvent)
@@ -487,16 +629,44 @@ bool StereoRendering::onKeyEvent(const KeyboardEvent& keyEvent)
     if (keyEvent.key == KeyboardEvent::Key::R && keyEvent.type == KeyboardEvent::Type::KeyReleased) {
         mpDebugViz = !mpDebugViz;
     }
-    if (keyEvent.key == KeyboardEvent::Key::Up && keyEvent.type == KeyboardEvent::Type::KeyPressed) {
-        mpExperiment->processResponse(1);
-    }
-    if (keyEvent.key == KeyboardEvent::Key::Down && keyEvent.type == KeyboardEvent::Type::KeyPressed) {
-        mpExperiment->processResponse(0);
+
+    if (keyEvent.key == KeyboardEvent::Key::U && keyEvent.type == KeyboardEvent::Type::KeyPressed) {
+        mShowUI = !mShowUI;
     }
     if (keyEvent.key == KeyboardEvent::Key::K && keyEvent.type == KeyboardEvent::Type::KeyPressed) {
         mpExperiment->clear();
         mpCurrentLayer = 0;
     }
+    if (keyEvent.key == KeyboardEvent::Key::O && keyEvent.type == KeyboardEvent::Type::KeyPressed) {
+        mpCurrentLayer++;
+        startExperiment();
+    }
+
+    if (keyEvent.key == KeyboardEvent::Key::Space && keyEvent.type == KeyboardEvent::Type::KeyPressed) {
+        switch (mpState) {
+        case ExperimentState::Init:
+            mpState = ExperimentState::Transition;
+            mpTransitionTime = TRANSITION_TIME_START;
+            debug("started experiment");
+            break;
+        case ExperimentState::Transition:
+            break;
+        case ExperimentState::Trial:
+            mpPrevLevel = mpFoveationLevels[mpCurrentLayer];
+
+            mpExperiment->processResponse(1);
+            mpResults[mpCurrentLayer].responses.push_back(1);
+
+            mpState = ExperimentState::Transition;
+            mpTransitionTime = TRANSITION_TIME;
+
+            debug("participant detected change.., change=%.1f", mpExperiment->getMeasurement().getCurrentLevel() - mpPrevLevel);
+            break;
+        case ExperimentState::End:
+            break;
+        }
+    }
+
 
     return mpSceneRenderer ? mpSceneRenderer->onKeyEvent(keyEvent) : false;
 }
@@ -540,8 +710,8 @@ int main(int argc, char** argv)
     StereoRendering sample;
     SampleConfig config;
     config.windowDesc.title = "Stereo Rendering";
-    config.windowDesc.height = 1024;
-    config.windowDesc.width = 1600;
+    config.windowDesc.height = 720;
+    config.windowDesc.width = 1280;
     config.windowDesc.resizableWindow = true;
     config.deviceDesc.enableVR = true;
 #ifdef FALCOR_VK

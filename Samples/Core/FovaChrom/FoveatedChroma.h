@@ -35,6 +35,22 @@
 
 using namespace Falcor;
 
+enum class ExperimentState {
+    Init,
+    Trial,
+    Transition,
+    End
+};
+
+struct LayerResult {
+    int startingLayer;
+    std::vector<int> responses;
+    std::vector<std::string> debug;
+    int responseLimit;
+    int reverses;
+    int reverseLimit;
+};
+
 class StereoRendering : public Sample
 {
 public:
@@ -46,9 +62,19 @@ public:
     void onDataReload() override;
     void onGuiRender() override;
     void startExperiment();
+    void dumpResults();
+    void debug(const char *s, ...);
 
 private:
     std::unique_ptr<Psychophysics::Experiment> mpExperiment = nullptr;
+    std::unique_ptr<TextRenderer> mpFont = nullptr;
+    std::unique_ptr<GaussianBlur> mpBlur = nullptr;
+    CpuTimer mpTimer = {};
+    LayerResult mpResults[4] = {};
+    std::string mpDescription = "";
+    float mpTrialTime = 0.f;
+    float mpTransitionTime = 0.f;
+    ExperimentState mpState = ExperimentState::Init;
 
     std::unique_ptr<Fove::IFVRHeadset> mpFove = nullptr;
     unsigned int mpCurrentLayer = 0;
@@ -88,6 +114,7 @@ private:
     bool mpMouseMovingGaze = false;
     glm::vec2 mpGazePosition;
     glm::vec4 mpFoveationLevels;
+    float mpPrevLevel = 0;
 
     FullScreenPass::UniquePtr mpBlit;
     GraphicsVars::SharedPtr mpBlitVars;

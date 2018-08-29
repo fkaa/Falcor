@@ -104,6 +104,7 @@ namespace Falcor
             pBuf[center - i] = w;
         }
         mpVars->setTypedBuffer("weights", pBuf);
+        mSigmaDirty = false;
     }
 
     void GaussianBlur::createTmpFbo(const Texture* pSrc)
@@ -159,6 +160,9 @@ namespace Falcor
         if (mDirty)
         {
             createProgram();
+        }
+        if (mSigmaDirty) {
+            updateKernel();
         }
 
         uint32_t arraySize = pSrc->getArraySize();

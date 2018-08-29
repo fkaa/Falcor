@@ -377,7 +377,6 @@ namespace Falcor
             }
         }
 
-        renderText(getFpsMsg(), glm::vec2(10, 10));
         if(mpPixelZoom)
         {
             mpPixelZoom->render(mpRenderContext.get(), gpDevice->getSwapChainFbo().get());

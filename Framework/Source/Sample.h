@@ -203,7 +203,7 @@ namespace Falcor
 
         void toggleText(bool enabled);
         uint32_t getFrameID() const { return mFrameRate.getFrameCount(); }
-    private:
+    //private:
         // Private functions
         void initUI();
         void printProfileData();

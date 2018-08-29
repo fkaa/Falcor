@@ -74,7 +74,7 @@ namespace Falcor
         /** Set the sigma. Higher values will result in a blurrier image.
             Values greater than half the kernel width are ineffective.
         */
-        void setSigma(float sigma) { mSigma = sigma; mDirty = true; }
+        void setSigma(float sigma) { mSigma = sigma; mSigmaDirty = true; }
 
         /** Get the sigma value.
         */
@@ -100,6 +100,7 @@ namespace Falcor
         Fbo::SharedPtr mpTmpFbo;
         Sampler::SharedPtr mpSampler;
         bool mDirty = true;
+        bool mSigmaDirty = true;
         GraphicsVars::SharedPtr mpVars;
 
         struct
