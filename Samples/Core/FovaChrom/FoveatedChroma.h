@@ -111,8 +111,10 @@ private:
 
     bool mpDebugFoveation = true;
     bool mpDebugViz = false;
+    bool mpLerpGaze = false;
     bool mpMouseMovingGaze = false;
     glm::vec2 mpGazePosition;
+    glm::vec2 mpPrevGazePosition;
     glm::vec4 mpFoveationLevels;
     float mpPrevLevel = 0;
 

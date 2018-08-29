@@ -29,10 +29,14 @@
 #include <io.h>
 #include <cstdio>
 #include <cstdlib>
+#include <Windows.h>
+#include "Shlwapi.h"
+//#include "tobii.h"
 
 static const glm::vec4 kClearColor(0.28f, 0.52f, 0.90f, 1);
 
 #pragma comment(lib, "FoveClient.lib")
+#pragma comment(lib, "tobii_research.lib")
 
 #define TRANSITION_TIME 1.5f
 #define TRANSITION_TIME_START 5.f
@@ -114,7 +118,7 @@ void StereoRendering::dumpResults()
     for (int i = 1;; ++i) {
         snprintf(filename, 128, BASE_PATH "participant_results_%d.txt", i);
 
-        if (_access(filename, 0) != -1) {
+        if (PathFileExistsA(filename) == 0) {
 
             FILE *f = fopen(filename, "wb+");
 
@@ -412,6 +416,8 @@ void StereoRendering::loadScene(const std::string& filename)
     {
         mpScene->getModel(m)->bindSamplerToMaterials(mpBilinearSampler2);
     }
+    gpDevice->toggleVSync(false);
+
 }
 
 void StereoRendering::onLoad()
@@ -476,21 +482,35 @@ void StereoRendering::onFrameRender()
 {
     static uint32_t frameCount = 0u;
 
+    mpPrevGazePosition = mpGazePosition;
+
     Fove::SFVR_Vec2 left, right;
+    glm::vec2 gaze;
     if (mpFove && Fove::EFVR_ErrorCode::None == mpFove->GetGazeVectors2D(&left, &right)) {
         Fove::EFVR_Eye eye;
         mpFove->CheckEyesClosed(&eye);
         if (eye == Fove::EFVR_Eye::Neither) {
-            mpGazePosition.x = left.x * 0.5f + 0.5f;
-            mpGazePosition.y = 1 - (left.y * 0.5f + 0.5f);
+            gaze.x = left.x * 0.5f + 0.5f;
+            gaze.y = 1 - (left.y * 0.5f + 0.5f);
         }
+    }
+
+    if (gaze != mpGazePosition) {
+        mpPrevGazePosition = mpGazePosition;
+    }
+
+    if (mpLerpGaze) {
+        float dist = glm::distance(mpPrevGazePosition, gaze);
+        mpGazePosition = glm::lerp(mpPrevGazePosition, gaze, 1 - min(1.f, dist / 1000.f));
+    }
+    else {
+        mpGazePosition = gaze;
     }
 
     float t = (1.f - mpTransitionTime / TRANSITION_TIME);
     for (int i = mpCurrentLayer; i < 4; ++i) {
         mpFoveationLevels[i] = glm::lerp(mpPrevLevel, mpExperiment->getLevelForCurrentTrial(), t);
     }
-
 
     ConstantBuffer::SharedPtr pCB = mpBlitVars->getConstantBuffer("FoveatedCB");
     pCB["gEyePos"] = glm::vec4(mpGazePosition, mpDebugViz ? 1.0 : 0.0, mpColorSpace);
@@ -609,11 +629,17 @@ void StereoRendering::onFrameRender()
             mpPrevLevel = mpFoveationLevels[mpCurrentLayer];
             mpState = ExperimentState::Transition;
             mpTransitionTime = TRANSITION_TIME;
-
+            if (mpExperiment->getMeasurement().getCurrentLevel() >= 10.f) {
+                mpState = ExperimentState::End;
+                dumpResults();
+                debug("finished experiment");
+            }
             mpExperiment->processResponse(0);
             mpResults[mpCurrentLayer].responses.push_back(0);
 
-            debug("participant did not detect change.., change=%.1f", mpExperiment->getMeasurement().getCurrentLevel() - mpPrevLevel);
+            float change = mpExperiment->getMeasurement().getCurrentLevel() - mpPrevLevel;
+
+            debug("participant did not detect change.., change=%.1f", change);
         }
         break;
     case ExperimentState::End:
@@ -641,12 +667,15 @@ bool StereoRendering::onKeyEvent(const KeyboardEvent& keyEvent)
         mpCurrentLayer++;
         startExperiment();
     }
+    if (keyEvent.key == KeyboardEvent::Key::L && keyEvent.type == KeyboardEvent::Type::KeyPressed) {
+        mpLerpGaze = !mpLerpGaze;
+    }
 
     if (keyEvent.key == KeyboardEvent::Key::Space && keyEvent.type == KeyboardEvent::Type::KeyPressed) {
         switch (mpState) {
         case ExperimentState::Init:
             mpState = ExperimentState::Transition;
-            mpTransitionTime = TRANSITION_TIME_START;
+            mpTransitionTime = TRANSITION_TIME;
             debug("started experiment");
             break;
         case ExperimentState::Transition:
